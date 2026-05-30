@@ -23,6 +23,7 @@ import { Realtor } from '../../utils/tenant';
 
 interface SurveyFlowProps {
   realtor: Realtor;
+  onStepChange?: (step: number) => void;
 }
 
 // Slide animations based on stepping forward or backward
@@ -41,7 +42,7 @@ const slideVariants = {
   })
 };
 
-export default function SurveyFlow({ realtor }: SurveyFlowProps) {
+export default function SurveyFlow({ realtor, onStepChange }: SurveyFlowProps) {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
@@ -67,6 +68,10 @@ export default function SurveyFlow({ realtor }: SurveyFlowProps) {
       setRegionName(router.query.area as string);
     }
   }, [router.isReady, router.query.area]);
+
+  useEffect(() => {
+    onStepChange?.(step);
+  }, [step, onStepChange]);
 
   const handleNextStep = () => {
     setErrorMsg('');

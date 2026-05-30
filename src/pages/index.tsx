@@ -33,6 +33,7 @@ export default function Home() {
   const [regionName, setRegionName] = useState('York County');
   const [showAllComms, setShowAllComms] = useState(false);
   const [pulseTrigger, setPulseTrigger] = useState(0);
+  const [surveyStarted, setSurveyStarted] = useState(false);
 
   useEffect(() => {
     async function loadTenant() {
@@ -169,12 +170,12 @@ export default function Home() {
             } : {}}
             transition={{ duration: 0.6, ease: 'easeInOut' }}
           >
-            <SurveyFlow realtor={realtor} />
+            <SurveyFlow realtor={realtor} onStepChange={(step) => setSurveyStarted(step > 1)} />
           </motion.div>
         </main>
 
         {/* Preview Catalog Section */}
-        {communities.length > 0 && (
+        {communities.length > 0 && !surveyStarted && (
           <section className="max-w-7xl w-full mx-auto px-6 py-16 border-t border-border-custom/50 relative z-10 space-y-12">
             <div className="text-center space-y-4 max-w-2xl mx-auto">
               <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground tracking-tight">
