@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
+import Link from 'next/link';
 import { 
   Phone, 
   MapPin, 
@@ -31,7 +32,6 @@ export default function Home() {
   const [subdomain, setSubdomain] = useState('york');
   const [regionName, setRegionName] = useState('York County');
   const [showAllComms, setShowAllComms] = useState(false);
-  const [surveyNotice, setSurveyNotice] = useState<string | null>(null);
   const [pulseTrigger, setPulseTrigger] = useState(0);
 
   useEffect(() => {
@@ -72,7 +72,6 @@ export default function Home() {
   }, [router.isReady, router.query.area, subdomain, realtor]);
 
   const handleLockClick = (commName: string) => {
-    setSurveyNotice(`Complete our quick lifestyle matcher below to unlock floorplans, interactive maps, and ${realtor?.name.split(' ')[0]}'s expert insights for ${commName}!`);
     surveyRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     setPulseTrigger(prev => prev + 1);
   };
@@ -170,26 +169,6 @@ export default function Home() {
             } : {}}
             transition={{ duration: 0.6, ease: 'easeInOut' }}
           >
-            {surveyNotice && (
-              <motion.div 
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-primary/5 border-2 border-primary/20 rounded-xl p-5 mb-6 text-left text-foreground flex items-start gap-3 relative shadow-xs"
-              >
-                <Sparkles className="w-6 h-6 text-primary shrink-0 mt-0.5" />
-                <div className="flex-1 text-sm font-medium pr-6">
-                  <p className="font-extrabold text-primary text-base mb-0.5">Teaser Detail Locked</p>
-                  <p className="text-foreground/80 leading-relaxed">{surveyNotice}</p>
-                </div>
-                <button 
-                  onClick={() => setSurveyNotice(null)}
-                  className="text-foreground/40 hover:text-foreground text-lg font-bold absolute top-3 right-4 cursor-pointer focus:outline-none"
-                  aria-label="Close alert"
-                >
-                  ✕
-                </button>
-              </motion.div>
-            )}
             <SurveyFlow realtor={realtor} />
           </motion.div>
         </main>
@@ -317,9 +296,13 @@ export default function Home() {
             </div>
 
             <div className="border-t border-border-custom pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-foreground/60">
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-3 flex-wrap gap-y-2">
                 <span className="inline-block border border-border-custom px-2 py-0.5 rounded font-bold uppercase">Equal Housing Opportunity</span>
                 <span className="inline-block border border-border-custom px-2 py-0.5 rounded font-bold uppercase">REALTOR®</span>
+                <span className="text-foreground/30">|</span>
+                <Link href="/login" className="hover:text-primary transition-colors font-bold uppercase cursor-pointer">
+                  Agent Login
+                </Link>
               </div>
               <p>© {new Date().getFullYear()} 55+ Home Search. All rights reserved.</p>
             </div>
