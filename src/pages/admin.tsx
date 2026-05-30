@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { 
   Building, 
   Users, 
@@ -32,6 +33,7 @@ interface Lead {
 }
 
 export default function Admin() {
+  const router = useRouter();
   const [realtor, setRealtor] = useState<Realtor | null>(null);
   const [communities, setCommunities] = useState<Community[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -72,24 +74,52 @@ export default function Admin() {
   // Load all assets
   const loadAdminData = async () => {
     try {
-      const subdomain = getTenantSubdomain();
-      let activeRealtor = await fetchRealtorBySubdomain(subdomain);
-      
-      if (!activeRealtor) {
-        // Fallback for zero-config local development
-        activeRealtor = DEFAULT_REALTOR;
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.push('/login');
+        return;
       }
-      setRealtor(activeRealtor);
+
+      const loggedEmail = session.user?.email;
+      if (!loggedEmail) {
+        router.push('/login');
+        return;
+      }
+
+      // Fetch all realtors to locate the logged-in user's profile
+      const { data: realtors, error: rError } = await supabase
+        .from('realtors')
+        .select('*');
+
+      if (rError) throw rError;
+
+      const loggedRealtor = (realtors || []).find((r: any) => r.email.toLowerCase() === loggedEmail.toLowerCase());
+      
+      if (!loggedRealtor) {
+        // Not a registered realtor
+        await supabase.auth.signOut();
+        router.push('/login');
+        return;
+      }
+
+      // Enforce correct tenant subdomain scope
+      const currentSubdomain = getTenantSubdomain();
+      if (loggedRealtor.target_subdomain !== currentSubdomain) {
+        router.push(`/admin?tenant=${loggedRealtor.target_subdomain}`);
+        return;
+      }
+
+      setRealtor(loggedRealtor);
 
       // Fetch Communities
-      const comms = await fetchCommunitiesByRealtor(activeRealtor.id);
+      const comms = await fetchCommunitiesByRealtor(loggedRealtor.id);
       setCommunities(comms);
 
       // Fetch Leads
       const { data: leadData, error: leadError } = await supabase
         .from('leads')
         .select('*')
-        .eq('realtor_id', activeRealtor.id)
+        .eq('realtor_id', loggedRealtor.id)
         .order('created_at', { ascending: false });
       
       if (!leadError && leadData) {
@@ -360,6 +390,15 @@ export default function Admin() {
                   <p className="text-[9px] font-extrabold text-primary uppercase tracking-wider">Local Advisor Account</p>
                   <p className="text-base font-black text-foreground">{realtor.name}</p>
                 </div>
+                <button
+                  onClick={async () => {
+                    await supabase.auth.signOut();
+                    router.push('/login');
+                  }}
+                  className="bg-foreground hover:bg-foreground/90 text-white text-xs font-serif font-bold py-2 px-4.5 rounded-lg transition-colors cursor-pointer"
+                >
+                  Log Out
+                </button>
               </div>
             )}
           </div>

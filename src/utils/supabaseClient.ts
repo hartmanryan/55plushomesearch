@@ -1895,6 +1895,36 @@ class MockQueryBuilder {
 const mockSupabase = {
   from(tableName: string) {
     return new MockQueryBuilder(tableName);
+  },
+  auth: {
+    async signInWithOtp({ email, options }: { email: string, options?: any }) {
+      return { data: { message: "Mock OTP link generated" }, error: null };
+    },
+    async signOut() {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('55plus_auth_session');
+      }
+      return { error: null };
+    },
+    async getSession() {
+      if (typeof window === 'undefined') return { data: { session: null }, error: null };
+      const val = localStorage.getItem('55plus_auth_session');
+      if (val) {
+        try {
+          const session = JSON.parse(val);
+          return { data: { session }, error: null };
+        } catch {
+          return { data: { session: null }, error: null };
+        }
+      }
+      return { data: { session: null }, error: null };
+    },
+    onAuthStateChange(callback: any) {
+      this.getSession().then(({ data: { session } }) => {
+        callback('SIGNED_IN', session);
+      });
+      return { data: { subscription: { unsubscribe() {} } } };
+    }
   }
 };
 
