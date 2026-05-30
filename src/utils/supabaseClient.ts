@@ -13,7 +13,7 @@ const isRealSupabaseConfigured =
 const DEFAULT_REALTOR = {
   id: 'd8c7b80a-9d6e-4c3e-902e-8cb5d6e2e5c8',
   name: 'Walt Wensel',
-  email: 'walt@55plushomesearch.com',
+  email: 'walt@retiretopa.com',
   phone: '(717) 555-0199',
   target_subdomain: 'york',
   default_area: 'York, PA',
@@ -1651,11 +1651,22 @@ const getLocalStorageDb = () => {
     try {
       const parsed = JSON.parse(val);
       if (key === '55plus_realtors' && Array.isArray(parsed)) {
-        // Ensure both DEFAULT_REALTOR and TAMPA_REALTOR are in the list
-        const hasWalt = parsed.some(r => r.id === DEFAULT_REALTOR.id);
-        const hasTampa = parsed.some(r => r.id === TAMPA_REALTOR.id);
-        if (!hasWalt || !hasTampa) {
-          const updated = [...parsed];
+        let isUpdated = false;
+        const updated = parsed.map(r => {
+          if (r.id === DEFAULT_REALTOR.id && r.email !== DEFAULT_REALTOR.email) {
+            isUpdated = true;
+            return { ...r, email: DEFAULT_REALTOR.email };
+          }
+          if (r.id === TAMPA_REALTOR.id && r.email !== TAMPA_REALTOR.email) {
+            isUpdated = true;
+            return { ...r, email: TAMPA_REALTOR.email };
+          }
+          return r;
+        });
+
+        const hasWalt = updated.some(r => r.id === DEFAULT_REALTOR.id);
+        const hasTampa = updated.some(r => r.id === TAMPA_REALTOR.id);
+        if (!hasWalt || !hasTampa || isUpdated) {
           if (!hasWalt) updated.push(DEFAULT_REALTOR);
           if (!hasTampa) updated.push(TAMPA_REALTOR);
           localStorage.setItem(key, JSON.stringify(updated));

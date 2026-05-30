@@ -140,7 +140,7 @@ export default function Login() {
                     id="login-email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="e.g. walt@55plushomesearch.com"
+                    placeholder="e.g. walt@retiretopa.com"
                     className="w-full border-2 border-border-custom pl-11 pr-4 py-3.5 rounded-xl text-base bg-[#FAF9F5]/30 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
                     disabled={loading || isMockSent}
                     required
