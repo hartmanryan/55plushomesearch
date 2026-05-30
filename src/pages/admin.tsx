@@ -12,9 +12,8 @@ import {
   AlertTriangle,
   Settings
 } from 'lucide-react';
-import { supabase } from '../utils/supabaseClient';
+import { supabase, SUPERADMIN_EMAILS, DEFAULT_REALTOR } from '../utils/supabaseClient';
 import { getTenantSubdomain, fetchRealtorBySubdomain, fetchCommunitiesByRealtor, Realtor, Community } from '../utils/tenant';
-import { DEFAULT_REALTOR } from '../utils/supabaseClient';
 
 interface Lead {
   id: string;
@@ -39,6 +38,9 @@ export default function Admin() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'leads' | 'communities' | 'settings'>('leads');
+
+  const [isSuperadmin, setIsSuperadmin] = useState(false);
+  const [allRealtors, setAllRealtors] = useState<Realtor[]>([]);
 
   // Realtor Settings state
   const [settingsName, setSettingsName] = useState('');
@@ -86,40 +88,75 @@ export default function Admin() {
         return;
       }
 
-      // Fetch all realtors to locate the logged-in user's profile
+      const isLoggedSuperadmin = SUPERADMIN_EMAILS.includes(loggedEmail.toLowerCase());
+      setIsSuperadmin(isLoggedSuperadmin);
+
+      // Fetch all realtors to locate the profile(s)
       const { data: realtors, error: rError } = await supabase
         .from('realtors')
         .select('*');
 
       if (rError) throw rError;
 
-      const loggedRealtor = (realtors || []).find((r: any) => r.email.toLowerCase() === loggedEmail.toLowerCase());
-      
-      if (!loggedRealtor) {
-        // Not a registered realtor
-        await supabase.auth.signOut();
-        router.push('/login');
-        return;
+      const listRealtors = realtors || [];
+      setAllRealtors(listRealtors);
+
+      let activeRealtor: Realtor | null = null;
+
+      if (isLoggedSuperadmin) {
+        // Superadmin bypasses normal redirection lock
+        const currentSubdomain = getTenantSubdomain();
+        
+        // Find the realtor matching the current subdomain, or default to York (walt)
+        activeRealtor = listRealtors.find((r: any) => r.target_subdomain === currentSubdomain) || 
+                        listRealtors.find((r: any) => r.target_subdomain === 'york') || 
+                        listRealtors[0] || 
+                        null;
+
+        if (!activeRealtor) {
+          throw new Error('No realtors found to display');
+        }
+
+        // If the URL did not have a tenant parameter, redirect to the default active tenant
+        const urlParams = new URLSearchParams(window.location.search);
+        if (!urlParams.has('tenant')) {
+          router.push(`/admin?tenant=${activeRealtor.target_subdomain}`);
+          return;
+        }
+      } else {
+        // Normal realtor verification
+        const loggedRealtor = listRealtors.find((r: any) => r.email.toLowerCase() === loggedEmail.toLowerCase());
+        
+        if (!loggedRealtor) {
+          // Not a registered realtor
+          await supabase.auth.signOut();
+          router.push('/login');
+          return;
+        }
+
+        // Enforce correct tenant subdomain scope
+        const currentSubdomain = getTenantSubdomain();
+        if (loggedRealtor.target_subdomain !== currentSubdomain) {
+          router.push(`/admin?tenant=${loggedRealtor.target_subdomain}`);
+          return;
+        }
+
+        activeRealtor = loggedRealtor;
       }
 
-      // Enforce correct tenant subdomain scope
-      const currentSubdomain = getTenantSubdomain();
-      if (loggedRealtor.target_subdomain !== currentSubdomain) {
-        router.push(`/admin?tenant=${loggedRealtor.target_subdomain}`);
-        return;
-      }
+      if (!activeRealtor) return;
 
-      setRealtor(loggedRealtor);
+      setRealtor(activeRealtor);
 
       // Fetch Communities
-      const comms = await fetchCommunitiesByRealtor(loggedRealtor.id);
+      const comms = await fetchCommunitiesByRealtor(activeRealtor.id);
       setCommunities(comms);
 
       // Fetch Leads
       const { data: leadData, error: leadError } = await supabase
         .from('leads')
         .select('*')
-        .eq('realtor_id', loggedRealtor.id)
+        .eq('realtor_id', activeRealtor.id)
         .order('created_at', { ascending: false });
       
       if (!leadError && leadData) {
@@ -138,11 +175,11 @@ export default function Admin() {
     // Poll for lead and message updates to keep live takeover synchronized
     const interval = setInterval(loadAdminData, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [router.query.tenant]);
 
-  // Initialize settings input values once realtor is loaded
+  // Initialize settings input values once realtor is loaded or changed
   useEffect(() => {
-    if (realtor && !settingsName) {
+    if (realtor) {
       setSettingsName(realtor.name);
       setSettingsPhone(realtor.phone);
       setSettingsEmail(realtor.email);
@@ -383,13 +420,48 @@ export default function Admin() {
 
             {realtor && (
               <div className="flex items-center gap-4 bg-white/95 py-2 px-3.5 rounded-xl border border-border-custom shadow-2xs">
-                <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-base shrink-0">
-                  {realtor.name.split(' ').map(n => n[0]).join('')}
-                </div>
-                <div className="text-left hidden sm:block">
-                  <p className="text-[9px] font-extrabold text-primary uppercase tracking-wider">Local Advisor Account</p>
-                  <p className="text-base font-black text-foreground">{realtor.name}</p>
-                </div>
+                {isSuperadmin ? (
+                  // Superadmin dropdown switcher
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-base shrink-0 border-2 border-primary/30">
+                      SA
+                    </div>
+                    <div className="text-left">
+                      <p className="text-[9px] font-extrabold text-primary uppercase tracking-wider flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        Superadmin Mode
+                      </p>
+                      
+                      <div className="relative mt-0.5">
+                        <select
+                          value={realtor.target_subdomain}
+                          onChange={(e) => {
+                            const selectedSubdomain = e.target.value;
+                            router.push(`/admin?tenant=${selectedSubdomain}`);
+                          }}
+                          className="bg-[#FAF9F5] border border-border-custom text-xs font-bold rounded-lg px-2.5 py-1 focus:outline-none focus:ring-2 focus:ring-primary/20 text-foreground cursor-pointer"
+                        >
+                          {allRealtors.map((r) => (
+                            <option key={r.id} value={r.target_subdomain}>
+                              {r.name} ({r.default_area})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  // Standard Advisor Display
+                  <>
+                    <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-base shrink-0">
+                      {realtor.name.split(' ').map(n => n[0]).join('')}
+                    </div>
+                    <div className="text-left hidden sm:block">
+                      <p className="text-[9px] font-extrabold text-primary uppercase tracking-wider">Local Advisor Account</p>
+                      <p className="text-base font-black text-foreground">{realtor.name}</p>
+                    </div>
+                  </>
+                )}
                 <button
                   onClick={async () => {
                     await supabase.auth.signOut();

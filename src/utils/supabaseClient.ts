@@ -9,6 +9,8 @@ const isRealSupabaseConfigured =
   supabaseAnonKey &&
   supabaseAnonKey !== 'YOUR_SUPABASE_ANON_KEY';
 
+export const SUPERADMIN_EMAILS = ['propknocks@gmail.com'];
+
 // Mock DB initial seed data
 const DEFAULT_REALTOR = {
   id: 'd8c7b80a-9d6e-4c3e-902e-8cb5d6e2e5c8',

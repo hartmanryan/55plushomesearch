@@ -3,7 +3,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { Building, Mail, Sparkles, AlertCircle, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase, isMockClient } from '../utils/supabaseClient';
+import { supabase, isMockClient, SUPERADMIN_EMAILS } from '../utils/supabaseClient';
 
 export default function Login() {
   const router = useRouter();
@@ -42,7 +42,19 @@ export default function Login() {
 
       if (rError) throw rError;
 
-      const matched = (realtors || []).find((r: any) => r.email.toLowerCase() === targetEmail);
+      const isSuperadmin = SUPERADMIN_EMAILS.includes(targetEmail);
+      let matched = (realtors || []).find((r: any) => r.email.toLowerCase() === targetEmail);
+
+      if (!matched && isSuperadmin) {
+        // Virtual realtor object for Superadmin login
+        matched = {
+          id: 'superadmin-ryan-hartman-id',
+          name: 'Ryan Hartman',
+          email: targetEmail,
+          target_subdomain: 'york', // Default landing subdomain
+          role: 'superadmin'
+        };
+      }
 
       if (!matched) {
         setErrorMsg('This email is not registered as an active advisor.');
@@ -82,12 +94,15 @@ export default function Login() {
 
     // Simulate callback auth session registration
     const mockSession = {
-      access_token: 'mock-session-jwt-token-id-55plus',
+      access_token: mockRealtor.role === 'superadmin'
+        ? 'mock-session-jwt-token-id-55plus-superadmin'
+        : 'mock-session-jwt-token-id-55plus',
       user: {
         id: mockRealtor.id,
         email: mockRealtor.email,
         user_metadata: {
-          name: mockRealtor.name
+          name: mockRealtor.name,
+          role: mockRealtor.role || 'realtor'
         }
       }
     };
