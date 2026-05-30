@@ -58,7 +58,7 @@ export default function Home() {
 
   useEffect(() => {
     const activeSubdomain = getTenantSubdomain();
-    const defaultRegion = activeSubdomain === 'york' ? 'York County' : 'Tampa Bay';
+    const defaultRegion = realtor?.default_area || (activeSubdomain === 'york' ? 'York County' : 'Tampa Bay');
     
     if (router.isReady) {
       if (router.query.area) {
@@ -69,7 +69,7 @@ export default function Home() {
     } else {
       setRegionName(defaultRegion);
     }
-  }, [router.isReady, router.query.area, subdomain]);
+  }, [router.isReady, router.query.area, subdomain, realtor]);
 
   const handleLockClick = (commName: string) => {
     setSurveyNotice(`Complete our quick lifestyle matcher below to unlock floorplans, interactive maps, and ${realtor?.name.split(' ')[0]}'s expert insights for ${commName}!`);

@@ -8,7 +8,8 @@ import {
   MessageSquare,
   Trash2,
   Send,
-  AlertTriangle
+  AlertTriangle,
+  Settings
 } from 'lucide-react';
 import { supabase } from '../utils/supabaseClient';
 import { getTenantSubdomain, fetchRealtorBySubdomain, fetchCommunitiesByRealtor, Realtor, Community } from '../utils/tenant';
@@ -35,7 +36,15 @@ export default function Admin() {
   const [communities, setCommunities] = useState<Community[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'leads' | 'communities'>('leads');
+  const [activeTab, setActiveTab] = useState<'leads' | 'communities' | 'settings'>('leads');
+
+  // Realtor Settings state
+  const [settingsName, setSettingsName] = useState('');
+  const [settingsPhone, setSettingsPhone] = useState('');
+  const [settingsEmail, setSettingsEmail] = useState('');
+  const [settingsDefaultArea, setSettingsDefaultArea] = useState('');
+  const [settingsNotice, setSettingsNotice] = useState<string | null>(null);
+  const [settingsLoading, setSettingsLoading] = useState(false);
 
   // Takeover chat console state
   const [activeTakeoverLead, setActiveTakeoverLead] = useState<Lead | null>(null);
@@ -100,6 +109,53 @@ export default function Admin() {
     const interval = setInterval(loadAdminData, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  // Initialize settings input values once realtor is loaded
+  useEffect(() => {
+    if (realtor && !settingsName) {
+      setSettingsName(realtor.name);
+      setSettingsPhone(realtor.phone);
+      setSettingsEmail(realtor.email);
+      setSettingsDefaultArea(realtor.default_area || '');
+    }
+  }, [realtor]);
+
+  const handleSaveSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!realtor) return;
+
+    setSettingsLoading(true);
+    setSettingsNotice(null);
+
+    try {
+      const updatedData = {
+        name: settingsName.trim(),
+        phone: settingsPhone.trim(),
+        email: settingsEmail.trim(),
+        default_area: settingsDefaultArea.trim()
+      };
+
+      const { data, error } = await supabase
+        .from('realtors')
+        .update(updatedData)
+        .eq('id', realtor.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        setRealtor(data as Realtor);
+        setSettingsNotice('Profile settings updated successfully!');
+        setTimeout(() => setSettingsNotice(null), 4000);
+      }
+    } catch (err: any) {
+      console.error('Failed to update settings:', err);
+      setSettingsNotice('Failed to update profile settings. Please try again.');
+    } finally {
+      setSettingsLoading(false);
+    }
+  };
 
   // Sync takeover messages when active lead changes or updates
   const fetchTakeoverMessages = async () => {
@@ -351,7 +407,7 @@ export default function Admin() {
           </div>
 
           {/* Action Tabs selector like on portal */}
-          <div className="bg-border-custom/40 p-1.5 rounded-2xl flex gap-1.5 border border-border-custom max-w-md">
+          <div className="bg-border-custom/40 p-1.5 rounded-2xl flex gap-1.5 border border-border-custom max-w-xl">
             <button
               onClick={() => setActiveTab('leads')}
               className={`flex-1 py-3 px-4 rounded-xl text-base font-bold flex items-center justify-center gap-2 transition-all cursor-pointer interactive-target ${
@@ -373,6 +429,17 @@ export default function Admin() {
             >
               <Building className="w-5 h-5" />
               Community Directory
+            </button>
+            <button
+              onClick={() => setActiveTab('settings')}
+              className={`flex-1 py-3 px-4 rounded-xl text-base font-bold flex items-center justify-center gap-2 transition-all cursor-pointer interactive-target ${
+                activeTab === 'settings'
+                  ? 'bg-white text-primary shadow-2xs border border-border-custom'
+                  : 'text-foreground/60 hover:text-foreground hover:bg-white/40'
+              }`}
+            >
+              <Settings className="w-5 h-5" />
+              Profile Settings
             </button>
           </div>
 
@@ -833,6 +900,96 @@ export default function Admin() {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* TAB 3: Profile Settings */}
+          {activeTab === 'settings' && realtor && (
+            <div className="max-w-2xl bg-card border border-border-custom rounded-2xl p-6 sm:p-8 space-y-6 editorial-shadow">
+              <div className="border-b border-border-custom pb-4">
+                <h3 className="text-2xl font-serif font-bold text-foreground">Profile & Target Settings</h3>
+                <p className="text-sm text-foreground/50 mt-1">Configure your personal advisor name, contact number, and homepage branding options.</p>
+              </div>
+
+              {settingsNotice && (
+                <div className={`p-4 rounded-xl border text-sm font-semibold ${
+                  settingsNotice.includes('successfully')
+                    ? 'bg-emerald-50 border-emerald-200/50 text-emerald-800'
+                    : 'bg-red-50 border-red-200/50 text-red-800'
+                }`}>
+                  {settingsNotice}
+                </div>
+              )}
+
+              <form onSubmit={handleSaveSettings} className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <label htmlFor="settings-name" className="block text-sm font-extrabold text-foreground uppercase tracking-wider mb-2">Advisor Full Name</label>
+                    <input
+                      type="text"
+                      id="settings-name"
+                      value={settingsName}
+                      onChange={(e) => setSettingsName(e.target.value)}
+                      className="w-full border border-border-custom p-3 rounded-xl text-base bg-[#FAF9F5]/30 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="settings-phone" className="block text-sm font-extrabold text-foreground uppercase tracking-wider mb-2">Contact Phone</label>
+                    <input
+                      type="text"
+                      id="settings-phone"
+                      value={settingsPhone}
+                      onChange={(e) => setSettingsPhone(e.target.value)}
+                      className="w-full border border-border-custom p-3 rounded-xl text-base bg-[#FAF9F5]/30 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
+                      required
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label htmlFor="settings-email" className="block text-sm font-extrabold text-foreground uppercase tracking-wider mb-2">Email Address</label>
+                    <input
+                      type="email"
+                      id="settings-email"
+                      value={settingsEmail}
+                      onChange={(e) => setSettingsEmail(e.target.value)}
+                      className="w-full border border-border-custom p-3 rounded-xl text-base bg-[#FAF9F5]/30 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
+                      required
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label htmlFor="settings-default-area" className="block text-sm font-extrabold text-foreground uppercase tracking-wider mb-2">Default Area Headline (e.g. York, PA)</label>
+                    <input
+                      type="text"
+                      id="settings-default-area"
+                      value={settingsDefaultArea}
+                      onChange={(e) => setSettingsDefaultArea(e.target.value)}
+                      className="w-full border border-border-custom p-3 rounded-xl text-base bg-[#FAF9F5]/30 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
+                      placeholder="e.g. York County or Tampa Bay"
+                      required
+                    />
+                    <p className="text-xs text-foreground/50 mt-1.5">This controls the dynamic region name in the main headline of your landing page.</p>
+                  </div>
+
+                  <div className="sm:col-span-2 bg-[#FAF9F5]/50 border border-border-custom/80 p-4.5 rounded-xl space-y-1">
+                    <span className="block text-[10px] uppercase font-extrabold text-foreground/45 tracking-wider">Subdomain Tenant ID</span>
+                    <span className="block text-base font-black text-foreground font-mono">{realtor.target_subdomain}</span>
+                    <p className="text-[11px] text-foreground/50">Your subdomain route cannot be changed from the broker settings panel. Contact support to modify your DNS config.</p>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-4 border-t border-border-custom">
+                  <button
+                    type="submit"
+                    disabled={settingsLoading}
+                    className="py-3 px-6 rounded-xl bg-primary hover:bg-primary-hover disabled:bg-primary/50 text-white font-serif font-bold text-base shadow-xs focus:ring-4 focus:ring-primary/20 transition-all cursor-pointer"
+                  >
+                    {settingsLoading ? 'Saving Settings...' : 'Save Settings'}
+                  </button>
+                </div>
+              </form>
             </div>
           )}
         </main>

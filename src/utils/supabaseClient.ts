@@ -16,6 +16,7 @@ const DEFAULT_REALTOR = {
   email: 'walt@55plushomesearch.com',
   phone: '(717) 555-0199',
   target_subdomain: 'york',
+  default_area: 'York, PA',
   created_at: new Date().toISOString()
 };
 
@@ -25,6 +26,7 @@ const TAMPA_REALTOR = {
   email: 'frank@55plushomesearch.com',
   phone: '(813) 555-0188',
   target_subdomain: 'tampa',
+  default_area: 'Tampa Bay',
   created_at: new Date().toISOString()
 };
 

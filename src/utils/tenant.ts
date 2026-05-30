@@ -6,6 +6,7 @@ export interface Realtor {
   email: string;
   phone: string;
   target_subdomain: string;
+  default_area?: string;
   created_at: string;
 }
 

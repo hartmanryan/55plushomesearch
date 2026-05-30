@@ -8,6 +8,7 @@ create table realtors (
   email text unique not null,
   phone text not null,
   target_subdomain text unique not null, -- e.g., 'york' or 'tampa'
+  default_area text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
