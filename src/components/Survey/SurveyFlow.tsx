@@ -43,7 +43,7 @@ const slideVariants = {
   })
 };
 
-export default function SurveyFlow({ realtor, onStepChange }: SurveyFlowProps) {
+export default function SurveyFlow({ realtor, onStepChange, onComplete }: SurveyFlowProps) {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
