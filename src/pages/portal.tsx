@@ -38,7 +38,8 @@ interface Lead {
   email: string;
   phone: string;
   moving_timeline: string;
-  budget_max: number;
+  budget_min?: number;
+  budget_max?: number;
   preferred_style: string;
   must_have_amenities: string[];
   bedrooms?: number;

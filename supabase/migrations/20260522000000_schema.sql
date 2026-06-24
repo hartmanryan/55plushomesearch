@@ -38,6 +38,7 @@ create table leads (
   email text,
   phone text,
   moving_timeline text,                  -- 'ASAP', '3-6 months', 'Browsing'
+  budget_min integer,
   budget_max integer,
   preferred_style text,                  -- 'Single Family', 'Townhome', 'Condo'
   must_have_amenities text[],

@@ -24,6 +24,7 @@ import { Realtor } from '../../utils/tenant';
 interface SurveyFlowProps {
   realtor: Realtor;
   onStepChange?: (step: number) => void;
+  onComplete?: (leadId: string) => void;
 }
 
 // Slide animations based on stepping forward or backward
@@ -59,6 +60,8 @@ export default function SurveyFlow({ realtor, onStepChange }: SurveyFlowProps) {
   const [phone, setPhone] = useState('');
   const [bedrooms, setBedrooms] = useState(2);
   const [baths, setBaths] = useState(2);
+  const [budgetMin, setBudgetMin] = useState<number | null>(null);
+  const [budgetMax, setBudgetMax] = useState<number | null>(null);
 
   // Region name - derived from realtor, overridden by URL parameter if available
   const [regionName, setRegionName] = useState(realtor.target_subdomain === 'york' ? 'York County' : 'Tampa Bay');
@@ -89,7 +92,14 @@ export default function SurveyFlow({ realtor, onStepChange }: SurveyFlowProps) {
     if (mustHaveAmenities.includes(amenity)) {
       setMustHaveAmenities(mustHaveAmenities.filter((a) => a !== amenity));
     } else {
-      setMustHaveAmenities([...mustHaveAmenities, amenity]);
+      if (mustHaveAmenities.length >= 2) return;
+      const updated = [...mustHaveAmenities, amenity];
+      setMustHaveAmenities(updated);
+      if (updated.length === 2) {
+        setTimeout(() => {
+          handleNextStep();
+        }, 400);
+      }
     }
   };
 
@@ -112,6 +122,8 @@ export default function SurveyFlow({ realtor, onStepChange }: SurveyFlowProps) {
         email: email.trim().toLowerCase(),
         phone: phone.trim(),
         moving_timeline: movingTimeline || 'Browsing',
+        budget_min: budgetMin,
+        budget_max: budgetMax,
         preferred_style: preferredStyle || 'Single-Family Detached',
         must_have_amenities: mustHaveAmenities,
         bedrooms: bedrooms,
@@ -130,9 +142,25 @@ export default function SurveyFlow({ realtor, onStepChange }: SurveyFlowProps) {
         throw error;
       }
 
-      // Redirect to portal with lead ID
-      const tenantParam = router.query.tenant ? `&tenant=${router.query.tenant}` : '';
-      router.push(`/portal?leadId=${data.id}${tenantParam}`);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('registered_lead_id', data.id);
+      }
+
+      if (typeof window !== 'undefined') {
+        const pendingRedirect = sessionStorage.getItem('pending_community_redirect');
+        if (pendingRedirect) {
+          window.open(pendingRedirect, '_blank');
+          sessionStorage.removeItem('pending_community_redirect');
+        }
+      }
+
+      if (onComplete) {
+        onComplete(data.id);
+      } else {
+        // Redirect to portal with lead ID
+        const tenantParam = router.query.tenant ? `&tenant=${router.query.tenant}` : '';
+        router.push(`/portal?leadId=${data.id}${tenantParam}`);
+      }
     } catch (err: any) {
       console.error('Error submitting survey:', err);
       setErrorMsg('Something went wrong. Please try again.');
@@ -142,7 +170,7 @@ export default function SurveyFlow({ realtor, onStepChange }: SurveyFlowProps) {
   };
 
   // Progress Bar percentage
-  const progressPercent = ((step - 1) / 5) * 100;
+  const progressPercent = ((step - 1) / 6) * 100;
 
   return (
     <div className="w-full max-w-2xl mx-auto bg-card rounded-2xl editorial-shadow border border-border-custom overflow-hidden">
@@ -272,17 +300,11 @@ export default function SurveyFlow({ realtor, onStepChange }: SurveyFlowProps) {
             {step === 2 && (
               <div>
                 <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-1 leading-tight tracking-tight text-center">
-                  What Amenities Are Most Important To You?
+                  Select 2 Amenities Most Important to You
                 </h2>
-                
-                {/* Animated Bounce Arrow Down */}
-                <motion.div
-                  animate={{ y: [0, 6, 0] }}
-                  transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-                  className="flex justify-center text-primary mb-8"
-                >
-                  <ChevronDown className="w-8 h-8" />
-                </motion.div>
+                <p className="text-base text-slate-500 mb-8 text-center">
+                  Pick exactly 2 amenities to automatically continue. (Selected: {mustHaveAmenities.length}/2)
+                </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                   {/* Amenity 1 */}
@@ -454,16 +476,6 @@ export default function SurveyFlow({ realtor, onStepChange }: SurveyFlowProps) {
                   </motion.button>
                 </div>
 
-                <motion.button
-                  type="button"
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                  onClick={handleNextStep}
-                  className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4.5 px-6 rounded-xl text-xl flex items-center justify-center transition-colors interactive-target shadow-xs cursor-pointer font-serif"
-                >
-                  Continue to Home Style
-                  <ArrowRight className="w-6 h-6 ml-2" />
-                </motion.button>
               </div>
             )}
 
@@ -633,8 +645,112 @@ export default function SurveyFlow({ realtor, onStepChange }: SurveyFlowProps) {
               </div>
             )}
 
-            {/* Step 5: Almost Done - Bedrooms & Baths Sliders */}
+            {/* Step 5: Price Range Selectors */}
             {step === 5 && (
+              <div>
+                <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-4 leading-tight tracking-tight text-center">
+                  What is your target price range?
+                </h2>
+                <p className="text-base text-slate-500 mb-8 text-center">
+                  Select a minimum and maximum budget to narrow down your custom matching communities.
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 text-left max-w-lg mx-auto">
+                  {/* Min Budget Column */}
+                  <div>
+                    <h3 className="text-base font-serif font-extrabold text-foreground mb-3 text-center md:text-left">
+                      Minimum Price
+                    </h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { label: 'No Min', value: null },
+                        { label: '$200k', value: 200000 },
+                        { label: '$250k', value: 250000 },
+                        { label: '$300k', value: 300000 },
+                        { label: '$350k', value: 350000 },
+                        { label: '$400k', value: 400000 },
+                        { label: '$450k', value: 450000 },
+                        { label: '$500k', value: 500000 }
+                      ].map((opt) => {
+                        const isSelected = budgetMin === opt.value;
+                        return (
+                          <button
+                            key={`min-${opt.value}`}
+                            type="button"
+                            onClick={() => {
+                              setBudgetMin(opt.value);
+                              if (opt.value !== null && budgetMax !== null && budgetMax < opt.value) {
+                                setBudgetMax(null);
+                              }
+                            }}
+                            className={`py-2.5 px-3 rounded-lg border text-sm font-bold text-center transition-all cursor-pointer ${
+                              isSelected
+                                ? 'bg-primary text-white border-primary shadow-2xs'
+                                : 'bg-white text-foreground border-border-custom hover:border-primary/50'
+                            }`}
+                          >
+                            {opt.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Max Budget Column */}
+                  <div>
+                    <h3 className="text-base font-serif font-extrabold text-foreground mb-3 text-center md:text-left">
+                      Maximum Price
+                    </h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { label: '$300k', value: 300000 },
+                        { label: '$450k', value: 450000 },
+                        { label: '$600k', value: 600000 },
+                        { label: '$750k', value: 750000 },
+                        { label: '$1M', value: 1000000 },
+                        { label: '$2M', value: 2000000 },
+                        { label: '$5M', value: 5000000 },
+                        { label: 'No Max', value: null }
+                      ].map((opt) => {
+                        const isSelected = budgetMax === opt.value;
+                        const isDisabled = budgetMin !== null && opt.value !== null && opt.value <= budgetMin;
+                        return (
+                          <button
+                            key={`max-${opt.value}`}
+                            type="button"
+                            disabled={isDisabled}
+                            onClick={() => setBudgetMax(opt.value)}
+                            className={`py-2.5 px-3 rounded-lg border text-sm font-bold text-center transition-all cursor-pointer ${
+                              isDisabled
+                                ? 'opacity-30 cursor-not-allowed bg-slate-50 border-slate-100 text-slate-400'
+                                : isSelected
+                                ? 'bg-primary text-white border-primary shadow-2xs'
+                                : 'bg-white text-foreground border-border-custom hover:border-primary/50'
+                            }`}
+                          >
+                            {opt.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                <motion.button
+                  type="button"
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  onClick={handleNextStep}
+                  className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4.5 px-6 rounded-xl text-xl flex items-center justify-center transition-colors interactive-target shadow-xs cursor-pointer font-serif"
+                >
+                  Continue to Almost Done
+                  <ArrowRight className="w-6 h-6 ml-2" />
+                </motion.button>
+              </div>
+            )}
+
+            {/* Step 6: Almost Done - Bedrooms & Baths Sliders */}
+            {step === 6 && (
               <div>
                 <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-8 leading-tight tracking-tight text-center">
                   Almost Done
@@ -702,13 +818,13 @@ export default function SurveyFlow({ realtor, onStepChange }: SurveyFlowProps) {
               </div>
             )}
 
-            {/* Step 6: Secure Value-Add Contact Capture */}
-            {step === 6 && (
+            {/* Step 7: Secure Value-Add Contact Capture */}
+            {step === 7 && (
               <div>
                 <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-3 leading-tight tracking-tight text-center">
                   Create Your FREE Account & See Your Custom Local Matches Now
                 </h2>
-                <p className="text-lg text-foreground/70 mb-8 leading-relaxed text-center font-light">
+                <p className="text-lg text-slate-500 mb-8 leading-relaxed text-center font-light">
                   As part of your FREE membership, you'll receive a weekly email update every Saturday morning with a list of recently reduced 55+ homes, special builder incentives, and any scheduled weekend open houses. You can unsubscribe easily with 1 click.
                 </p>
 

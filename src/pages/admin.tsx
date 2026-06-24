@@ -10,7 +10,11 @@ import {
   Trash2,
   Send,
   AlertTriangle,
-  Settings
+  Settings,
+  Pencil,
+  Copy,
+  ExternalLink,
+  Check
 } from 'lucide-react';
 import { supabase, SUPERADMIN_EMAILS, DEFAULT_REALTOR } from '../utils/supabaseClient';
 import { getTenantSubdomain, fetchRealtorBySubdomain, fetchCommunitiesByRealtor, Realtor, Community } from '../utils/tenant';
@@ -21,7 +25,8 @@ interface Lead {
   email: string;
   phone: string;
   moving_timeline: string;
-  budget_max: number;
+  budget_min?: number;
+  budget_max?: number;
   preferred_style: string;
   must_have_amenities: string[];
   bedrooms?: number;
@@ -41,6 +46,35 @@ export default function Admin() {
 
   const [isSuperadmin, setIsSuperadmin] = useState(false);
   const [allRealtors, setAllRealtors] = useState<Realtor[]>([]);
+
+  const [copiedUrl, setCopiedUrl] = useState(false);
+
+  const getSiteUrl = () => {
+    if (!realtor) return '';
+    if (typeof window === 'undefined') return '';
+    const hostname = window.location.hostname;
+    const protocol = window.location.protocol;
+    const port = window.location.port ? `:${window.location.port}` : '';
+    
+    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.')) {
+      return `${protocol}//${hostname}${port}/?tenant=${realtor.target_subdomain}`;
+    }
+    
+    const parts = hostname.split('.');
+    if (parts.length > 2) {
+      const apexDomain = parts.slice(-2).join('.');
+      return `${protocol}//${realtor.target_subdomain}.${apexDomain}`;
+    }
+    return `${protocol}//${realtor.target_subdomain}.${hostname}`;
+  };
+
+  const handleCopyUrl = () => {
+    const url = getSiteUrl();
+    if (!url) return;
+    navigator.clipboard.writeText(url);
+    setCopiedUrl(true);
+    setTimeout(() => setCopiedUrl(false), 2000);
+  };
 
   // Realtor Settings state
   const [settingsName, setSettingsName] = useState('');
@@ -72,6 +106,23 @@ export default function Admin() {
   const [newCommImageUrl, setNewCommImageUrl] = useState('');
   const [newCommLatitude, setNewCommLatitude] = useState<number | ''>('');
   const [newCommLongitude, setNewCommLongitude] = useState<number | ''>('');
+
+  // Edit community form state
+  const [editingCommunity, setEditingCommunity] = useState<Community | null>(null);
+  const [editCommName, setEditCommName] = useState('');
+  const [editCommRegion, setEditCommRegion] = useState('');
+  const [editCommPriceMin, setEditCommPriceMin] = useState(250000);
+  const [editCommPriceMax, setEditCommPriceMax] = useState(500000);
+  const [editCommHoaFee, setEditCommHoaFee] = useState(200);
+  const [editCommHoaFreq, setEditCommHoaFreq] = useState('monthly');
+  const [editCommHoaInclusions, setEditCommHoaInclusions] = useState<string[]>([]);
+  const [editCommAmenities, setEditCommAmenities] = useState<string[]>([]);
+  const [editCommHomeTypes, setEditCommHomeTypes] = useState<string[]>([]);
+  const [editCommNotes, setEditCommNotes] = useState('');
+  const [editCommUrl, setEditCommUrl] = useState('#');
+  const [editCommImageUrl, setEditCommImageUrl] = useState('');
+  const [editCommLatitude, setEditCommLatitude] = useState<number | ''>('');
+  const [editCommLongitude, setEditCommLongitude] = useState<number | ''>('');
 
   // Load all assets
   const loadAdminData = async () => {
@@ -345,6 +396,73 @@ export default function Admin() {
     }
   };
 
+  // Populate form with existing community values to edit
+  const startEditingCommunity = (comm: Community) => {
+    setEditingCommunity(comm);
+    setIsAddingCommunity(false); // Close add form if open
+    setEditCommName(comm.name);
+    setEditCommRegion(comm.region);
+    setEditCommPriceMin(comm.price_min);
+    setEditCommPriceMax(comm.price_max);
+    setEditCommFee(comm.hoa_fee);
+    setEditCommHoaFreq(comm.hoa_frequency);
+    setEditCommHoaInclusions(comm.hoa_inclusions || []);
+    setEditCommAmenities(comm.amenities || []);
+    setEditCommHomeTypes(comm.home_types || []);
+    setEditCommNotes(comm.realtor_notes || '');
+    setEditCommUrl(comm.community_url || '#');
+    setEditCommImageUrl(comm.image_url || '');
+    setEditCommLatitude(comm.latitude !== undefined && comm.latitude !== null ? comm.latitude : '');
+    setEditCommLongitude(comm.longitude !== undefined && comm.longitude !== null ? comm.longitude : '');
+    
+    // Scroll to form smoothly
+    window.scrollTo({ top: 300, behavior: 'smooth' });
+  };
+
+  // Helper because HOA Fee input names are different in add vs edit logic
+  const setEditCommFee = (val: number) => {
+    setEditCommHoaFee(val);
+  };
+
+  // Submit community edit
+  const handleEditCommunitySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCommunity) return;
+
+    setLoading(true);
+
+    try {
+      const { error } = await supabase
+        .from('communities')
+        .update({
+          name: editCommName,
+          region: editCommRegion,
+          price_min: editCommPriceMin,
+          price_max: editCommPriceMax,
+          hoa_fee: editCommHoaFee,
+          hoa_frequency: editCommHoaFreq,
+          hoa_inclusions: editCommHoaInclusions,
+          amenities: editCommAmenities,
+          home_types: editCommHomeTypes,
+          realtor_notes: editCommNotes,
+          community_url: editCommUrl,
+          image_url: editCommImageUrl || undefined,
+          latitude: editCommLatitude !== '' ? editCommLatitude : undefined,
+          longitude: editCommLongitude !== '' ? editCommLongitude : undefined
+        })
+        .eq('id', editingCommunity.id);
+
+      if (!error) {
+        setEditingCommunity(null);
+        loadAdminData();
+      }
+    } catch (err) {
+      console.error('Failed to edit community:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Delete community asset
   const handleDeleteCommunity = async (id: string) => {
     if (!confirm('Are you sure you want to delete this community asset?')) return;
@@ -462,6 +580,25 @@ export default function Admin() {
                     </div>
                   </>
                 )}
+                <div className="flex items-center gap-1.5 border-r border-border-custom pr-2">
+                  <button
+                    onClick={handleCopyUrl}
+                    className="flex items-center gap-1.5 bg-[#FAF9F5] hover:bg-[#FAF9F5]/80 text-foreground border border-border-custom text-xs font-bold py-2 px-3 rounded-lg transition-colors cursor-pointer"
+                    title="Copy your consumer landing page URL to clipboard"
+                  >
+                    {copiedUrl ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedUrl ? 'Copied' : 'Copy Site URL'}</span>
+                  </button>
+                  <a
+                    href={getSiteUrl()}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="p-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors flex items-center justify-center"
+                    title="Open your consumer landing page"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
                 <button
                   onClick={async () => {
                     await supabase.auth.signOut();
@@ -712,7 +849,10 @@ export default function Admin() {
               <div className="flex justify-between items-center bg-card p-4 rounded-xl border border-border-custom editorial-shadow">
                 <h3 className="text-xl font-serif font-bold text-foreground">Community Asset Curations</h3>
                 <button
-                  onClick={() => setIsAddingCommunity(!isAddingCommunity)}
+                  onClick={() => {
+                    setIsAddingCommunity(!isAddingCommunity);
+                    setEditingCommunity(null); // Close edit form if open
+                  }}
                   className="bg-primary hover:bg-primary-hover text-white font-serif font-bold py-2.5 px-5 rounded-lg text-base flex items-center gap-1.5 shadow-xs transition-colors focus:ring-4 focus:ring-primary/20"
                 >
                   <Plus className="w-5 h-5" />
@@ -943,6 +1083,229 @@ export default function Admin() {
                 </form>
               )}
 
+              {/* Edit Community Form Block */}
+              {editingCommunity && (
+                <form 
+                  onSubmit={handleEditCommunitySubmit}
+                  className="bg-card rounded-2xl border border-border-custom p-6 sm:p-8 space-y-6 editorial-shadow"
+                >
+                  <h4 className="text-2xl font-serif font-bold text-foreground border-b border-border-custom pb-3">Edit Community Asset Configuration</h4>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-base font-bold text-foreground mb-1">Community Name</label>
+                      <input
+                        type="text"
+                        value={editCommName}
+                        onChange={(e) => setEditCommName(e.target.value)}
+                        placeholder="e.g. Traditions at York"
+                        className="w-full border border-border-custom p-3 rounded-lg text-base bg-[#FAF9F5]/30 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-base font-bold text-foreground mb-1">Region/Location</label>
+                      <input
+                        type="text"
+                        value={editCommRegion}
+                        onChange={(e) => setEditCommRegion(e.target.value)}
+                        placeholder="e.g. York County"
+                        className="w-full border border-border-custom p-3 rounded-lg text-base bg-[#FAF9F5]/30 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-base font-bold text-foreground mb-1">Minimum Price ($)</label>
+                      <input
+                        type="number"
+                        value={editCommPriceMin}
+                        onChange={(e) => setEditCommPriceMin(Number(e.target.value))}
+                        className="w-full border border-border-custom p-3 rounded-lg text-base bg-[#FAF9F5]/30 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-base font-bold text-foreground mb-1">Maximum Price ($)</label>
+                      <input
+                        type="number"
+                        value={editCommPriceMax}
+                        onChange={(e) => setEditCommPriceMax(Number(e.target.value))}
+                        className="w-full border border-border-custom p-3 rounded-lg text-base bg-[#FAF9F5]/30 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-base font-bold text-foreground mb-1">HOA Fee ($)</label>
+                      <input
+                        type="number"
+                        value={editCommHoaFee}
+                        onChange={(e) => setEditCommHoaFee(Number(e.target.value))}
+                        className="w-full border border-border-custom p-3 rounded-lg text-base bg-[#FAF9F5]/30 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-base font-bold text-foreground mb-1">HOA Frequency</label>
+                      <select
+                        value={editCommHoaFreq}
+                        onChange={(e) => setEditCommHoaFreq(e.target.value)}
+                        className="w-full border border-border-custom p-3 rounded-lg text-base bg-white focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
+                      >
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="annually">Annually</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-base font-bold text-foreground mb-1">Image URL</label>
+                      <input
+                        type="text"
+                        value={editCommImageUrl}
+                        onChange={(e) => setEditCommImageUrl(e.target.value)}
+                        placeholder="e.g. /traditions_york_exterior.png"
+                        className="w-full border border-border-custom p-3 rounded-lg text-base bg-[#FAF9F5]/30 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-base font-bold text-foreground mb-1">Latitude</label>
+                      <input
+                        type="number"
+                        step="any"
+                        value={editCommLatitude}
+                        onChange={(e) => setEditCommLatitude(e.target.value === '' ? '' : Number(e.target.value))}
+                        placeholder="e.g. 39.980"
+                        className="w-full border border-border-custom p-3 rounded-lg text-base bg-[#FAF9F5]/30 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-base font-bold text-foreground mb-1">Longitude</label>
+                      <input
+                        type="number"
+                        step="any"
+                        value={editCommLongitude}
+                        onChange={(e) => setEditCommLongitude(e.target.value === '' ? '' : Number(e.target.value))}
+                        placeholder="e.g. -76.710"
+                        className="w-full border border-border-custom p-3 rounded-lg text-base bg-[#FAF9F5]/30 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Home styles checkboxes */}
+                  <div className="space-y-2">
+                    <label className="block text-base font-bold text-foreground">Home Styles Offered</label>
+                    <div className="flex flex-wrap gap-4">
+                      {availableHomeStyles.map((style) => (
+                        <label key={style} className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={editCommHomeTypes.includes(style)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setEditCommHomeTypes([...editCommHomeTypes, style]);
+                              } else {
+                                setEditCommHomeTypes(editCommHomeTypes.filter(s => s !== style));
+                              }
+                            }}
+                            className="w-5 h-5 text-primary rounded cursor-pointer accent-primary"
+                          />
+                          <span className="text-base text-foreground/80">{style}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* HOA Inclusions checklist */}
+                  <div className="space-y-2">
+                    <label className="block text-base font-bold text-foreground">HOA Inclusions</label>
+                    <div className="flex flex-wrap gap-x-6 gap-y-2">
+                      {availableInclusions.map((inclusion) => (
+                        <label key={inclusion} className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={editCommHoaInclusions.includes(inclusion)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setEditCommHoaInclusions([...editCommHoaInclusions, inclusion]);
+                              } else {
+                                setEditCommHoaInclusions(editCommHoaInclusions.filter(i => i !== inclusion));
+                              }
+                            }}
+                            className="w-5 h-5 text-primary rounded cursor-pointer accent-primary"
+                          />
+                          <span className="text-base text-foreground/80">{inclusion}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Amenities checklist */}
+                  <div className="space-y-2">
+                    <label className="block text-base font-bold text-foreground">Amenities Offered</label>
+                    <div className="flex flex-wrap gap-x-6 gap-y-2">
+                      {availableAmenities.map((amenity) => (
+                        <label key={amenity} className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={editCommAmenities.includes(amenity)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setEditCommAmenities([...editCommAmenities, amenity]);
+                              } else {
+                                setEditCommAmenities(editCommAmenities.filter(a => a !== amenity));
+                              }
+                            }}
+                            className="w-5 h-5 text-primary rounded cursor-pointer accent-primary"
+                          />
+                          <span className="text-base text-foreground/80">{amenity}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-base font-bold text-foreground mb-1">Qualitative Realtor Insights (Grounded AI Context)</label>
+                    <textarea
+                      value={editCommNotes}
+                      onChange={(e) => setEditCommNotes(e.target.value)}
+                      placeholder="Explain neighborhood culture, resident demographics, golf-cart friendliness, social committee calendar context, or special access facts..."
+                      rows={4}
+                      className="w-full border border-border-custom p-3 rounded-lg text-base bg-[#FAF9F5]/30 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-base font-bold text-foreground mb-1">Listing URL</label>
+                    <input
+                      type="text"
+                      value={editCommUrl}
+                      onChange={(e) => setEditCommUrl(e.target.value)}
+                      className="w-full border border-border-custom p-3 rounded-lg text-base bg-[#FAF9F5]/30 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
+                    />
+                  </div>
+
+                  <div className="flex justify-end gap-3 border-t border-border-custom pt-4">
+                    <button
+                      type="button"
+                      onClick={() => setEditingCommunity(null)}
+                      className="py-2.5 px-5 rounded-lg border border-border-custom font-serif font-bold text-foreground hover:bg-[#FAF9F5] text-base"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="py-2.5 px-6 rounded-lg bg-primary hover:bg-primary-hover text-white font-serif font-bold text-base shadow-xs focus:ring-4 focus:ring-primary/20"
+                    >
+                      Update Asset
+                    </button>
+                  </div>
+                </form>
+              )}
+
               {/* Communities Directory Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {communities.map((comm) => (
@@ -972,13 +1335,22 @@ export default function Admin() {
                             )}
                           </div>
                         </div>
-                        <button
-                          onClick={() => handleDeleteCommunity(comm.id)}
-                          className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition-colors focus:ring-2 focus:ring-red-200"
-                          title="Delete community asset"
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </button>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => startEditingCommunity(comm)}
+                            className="text-primary hover:text-primary-hover hover:bg-primary/5 p-2 rounded-lg transition-colors focus:ring-2 focus:ring-primary/20 mr-1"
+                            title="Edit community asset"
+                          >
+                            <Pencil className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteCommunity(comm.id)}
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition-colors focus:ring-2 focus:ring-red-200"
+                            title="Delete community asset"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-3 bg-[#FAF9F5] p-3 rounded-xl border border-border-custom text-sm">
@@ -1082,6 +1454,35 @@ export default function Admin() {
                       required
                     />
                     <p className="text-xs text-foreground/50 mt-1.5">This controls the dynamic region name in the main headline of your landing page.</p>
+                  </div>
+
+                  <div className="sm:col-span-2 bg-[#FAF9F5]/50 border border-border-custom/80 p-4.5 rounded-xl space-y-2">
+                    <span className="block text-[10px] uppercase font-extrabold text-foreground/45 tracking-wider">Your Live Landing Page URL</span>
+                    <div className="flex gap-2 items-center">
+                      <input
+                        type="text"
+                        readOnly
+                        value={getSiteUrl()}
+                        className="flex-1 bg-white border border-border-custom px-3 py-2 rounded-lg text-sm font-mono text-foreground focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleCopyUrl}
+                        className="bg-primary hover:bg-primary-hover text-white text-xs font-bold py-2.5 px-4 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+                      >
+                        {copiedUrl ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                        {copiedUrl ? 'Copied!' : 'Copy'}
+                      </button>
+                      <a
+                        href={getSiteUrl()}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="bg-foreground hover:bg-foreground/90 text-white p-2.5 rounded-lg flex items-center justify-center transition-colors"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    </div>
+                    <p className="text-[11px] text-foreground/50">Share this link with prospective clients. When they visit this URL, they will be connected directly to you.</p>
                   </div>
 
                   <div className="sm:col-span-2 bg-[#FAF9F5]/50 border border-border-custom/80 p-4.5 rounded-xl space-y-1">
