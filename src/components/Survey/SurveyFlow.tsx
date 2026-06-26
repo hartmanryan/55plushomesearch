@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../utils/supabaseClient';
-import { Realtor } from '../../utils/tenant';
+import { Realtor, getTenantSubdomain } from '../../utils/tenant';
 
 interface SurveyFlowProps {
   realtor: Realtor;
@@ -158,7 +158,8 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
         onComplete(data.id);
       } else {
         // Redirect to portal with lead ID
-        const tenantParam = router.query.tenant ? `&tenant=${router.query.tenant}` : '';
+        const activeTenant = getTenantSubdomain();
+        const tenantParam = activeTenant ? `&tenant=${activeTenant}` : '';
         router.push(`/portal?leadId=${data.id}${tenantParam}`);
       }
     } catch (err: any) {

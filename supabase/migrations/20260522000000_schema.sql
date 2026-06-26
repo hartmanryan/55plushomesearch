@@ -10,6 +10,7 @@ create table realtors (
   target_subdomain text unique not null, -- e.g., 'york' or 'tampa'
   default_area text,
   facebook_pixel_id text,
+  ref_id integer unique,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 

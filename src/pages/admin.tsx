@@ -17,7 +17,7 @@ import {
   Check
 } from 'lucide-react';
 import { supabase, SUPERADMIN_EMAILS, DEFAULT_REALTOR } from '../utils/supabaseClient';
-import { getTenantSubdomain, fetchRealtorBySubdomain, fetchCommunitiesByRealtor, Realtor, Community } from '../utils/tenant';
+import { getTenantRef, fetchRealtorByRef, fetchCommunitiesByRealtor, Realtor, Community } from '../utils/tenant';
 
 interface Lead {
   id: string;
@@ -55,17 +55,18 @@ export default function Admin() {
     const hostname = window.location.hostname;
     const protocol = window.location.protocol;
     const port = window.location.port ? `:${window.location.port}` : '';
+    const refVal = realtor.ref_id || 1;
     
     if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.')) {
-      return `${protocol}//${hostname}${port}/?tenant=${realtor.target_subdomain}`;
+      return `${protocol}//${hostname}${port}/?ref=${refVal}`;
     }
     
     const parts = hostname.split('.');
     if (parts.length > 2) {
       const apexDomain = parts.slice(-2).join('.');
-      return `${protocol}//${realtor.target_subdomain}.${apexDomain}`;
+      return `${protocol}//www.${apexDomain}${port}/?ref=${refVal}`;
     }
-    return `${protocol}//${realtor.target_subdomain}.${hostname}`;
+    return `${protocol}//www.${hostname}${port}/?ref=${refVal}`;
   };
 
   const handleCopyUrl = () => {
@@ -158,11 +159,11 @@ export default function Admin() {
 
       if (isLoggedSuperadmin) {
         // Superadmin bypasses normal redirection lock
-        const currentSubdomain = getTenantSubdomain();
+        const currentRef = getTenantRef();
         
-        // Find the realtor matching the current subdomain, or default to York (walt)
-        activeRealtor = listRealtors.find((r: any) => r.target_subdomain === currentSubdomain) || 
-                        listRealtors.find((r: any) => r.target_subdomain === 'york') || 
+        // Find the realtor matching the current ref ID, or default to Walt (ref = 1)
+        activeRealtor = listRealtors.find((r: any) => String(r.ref_id) === currentRef) || 
+                        listRealtors.find((r: any) => String(r.ref_id) === '1') || 
                         listRealtors[0] || 
                         null;
 
@@ -170,10 +171,10 @@ export default function Admin() {
           throw new Error('No realtors found to display');
         }
 
-        // If the URL did not have a tenant parameter, redirect to the default active tenant
+        // If the URL did not have a ref parameter, redirect to the active realtor ref
         const urlParams = new URLSearchParams(window.location.search);
-        if (!urlParams.has('tenant')) {
-          router.push(`/admin?tenant=${activeRealtor.target_subdomain}`);
+        if (!urlParams.has('ref')) {
+          router.push(`/admin?ref=${activeRealtor.ref_id || 1}`);
           return;
         }
       } else {
@@ -187,10 +188,10 @@ export default function Admin() {
           return;
         }
 
-        // Enforce correct tenant subdomain scope
-        const currentSubdomain = getTenantSubdomain();
-        if (loggedRealtor.target_subdomain !== currentSubdomain) {
-          router.push(`/admin?tenant=${loggedRealtor.target_subdomain}`);
+        // Enforce correct tenant ref scope
+        const currentRef = getTenantRef();
+        if (String(loggedRealtor.ref_id) !== currentRef) {
+          router.push(`/admin?ref=${loggedRealtor.ref_id || 1}`);
           return;
         }
 
@@ -229,7 +230,7 @@ export default function Admin() {
     // Poll for lead and message updates to keep live takeover synchronized
     const interval = setInterval(loadAdminData, 5000);
     return () => clearInterval(interval);
-  }, [router.query.tenant]);
+  }, [router.query.ref]);
 
   // Initialize settings input values once realtor is loaded or changed
   useEffect(() => {
@@ -561,15 +562,15 @@ export default function Admin() {
                       
                       <div className="relative mt-0.5">
                         <select
-                          value={realtor.target_subdomain}
+                          value={realtor.ref_id}
                           onChange={(e) => {
-                            const selectedSubdomain = e.target.value;
-                            router.push(`/admin?tenant=${selectedSubdomain}`);
+                            const selectedRef = e.target.value;
+                            router.push(`/admin?ref=${selectedRef}`);
                           }}
                           className="bg-[#FAF9F5] border border-border-custom text-xs font-bold rounded-lg px-2.5 py-1 focus:outline-none focus:ring-2 focus:ring-primary/20 text-foreground cursor-pointer"
                         >
                           {allRealtors.map((r) => (
-                            <option key={r.id} value={r.target_subdomain}>
+                            <option key={r.id} value={r.ref_id}>
                               {r.name} ({r.default_area})
                             </option>
                           ))}

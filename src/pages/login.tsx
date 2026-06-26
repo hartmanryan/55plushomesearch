@@ -108,7 +108,7 @@ export default function Login() {
     };
 
     localStorage.setItem('55plus_auth_session', JSON.stringify(mockSession));
-    router.push(`/admin?tenant=${mockRealtor.target_subdomain}`);
+    router.push(`/admin?ref=${mockRealtor.ref_id || 1}`);
   };
 
   return (

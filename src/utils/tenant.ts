@@ -8,6 +8,7 @@ export interface Realtor {
   target_subdomain: string;
   default_area?: string;
   facebook_pixel_id?: string;
+  ref_id?: number;
   created_at: string;
 }
 
@@ -36,55 +37,74 @@ export interface Community {
  * E.g., york.55plushomesearch.com -> "york"
  * Localhost fallback uses ?tenant=... query parameter, defaulting to "york".
  */
-export function getTenantSubdomain(): string {
-  if (typeof window === 'undefined') return 'york';
+export function getTenantRef(): string {
+  if (typeof window === 'undefined') return '1';
 
-  // 1. Check query parameter first (great for testing/debugging)
+  // 1. Check ref query parameter first
   const urlParams = new URLSearchParams(window.location.search);
-  const queryTenant = urlParams.get('tenant');
-  if (queryTenant) return queryTenant.toLowerCase();
+  const queryRef = urlParams.get('ref');
+  if (queryRef) {
+    localStorage.setItem('active_tenant_ref', queryRef);
+    return queryRef;
+  }
 
-  // 2. Parse hostname
+  // 2. Check localStorage next to persist tenant across page transitions
+  const storedRef = localStorage.getItem('active_tenant_ref');
+  if (storedRef) {
+    return storedRef;
+  }
+
+  // 3. Fallback support for subdomains mapped to numeric ref IDs
   const hostname = window.location.hostname;
-  
-  // Localhost or IP check
-  if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.')) {
-    return 'york'; // default local tenant
+  if (hostname !== 'localhost' && hostname !== '127.0.0.1' && !hostname.startsWith('192.168.')) {
+    const parts = hostname.split('.');
+    if (parts.length > 2) {
+      const sub = parts[0].toLowerCase();
+      if (sub === 'tampa') return '2';
+      if (sub === 'york') return '1';
+    }
   }
 
-  // Parse domain (subdomain.domain.com or subdomain.domain.co.uk)
-  const parts = hostname.split('.');
-  
-  if (parts.length > 2) {
-    // If it's something like york.55plushomesearch.com, parts is ["york", "55plushomesearch", "com"]
-    // The subdomain is the first part.
-    return parts[0].toLowerCase();
-  }
-
-  return 'york'; // fallback default
+  return '1'; // fallback default (Walt Wensel, ref = 1)
 }
 
-/**
- * Fetches Realtor details by subdomain.
- */
-export async function fetchRealtorBySubdomain(subdomain: string): Promise<Realtor | null> {
+export async function fetchRealtorByRef(ref: string): Promise<Realtor | null> {
   try {
+    const refId = parseInt(ref, 10);
+    if (isNaN(refId)) {
+      // Compatibility fallback if old subdomain names are passed
+      if (ref === 'york') return fetchRealtorByRef('1');
+      if (ref === 'tampa') return fetchRealtorByRef('2');
+      return null;
+    }
+
     const { data, error } = await supabase
       .from('realtors')
       .select('*')
-      .eq('target_subdomain', subdomain)
+      .eq('ref_id', refId)
       .single();
 
     if (error) {
-      console.error('Error fetching realtor:', error);
+      console.error('Error fetching realtor by ref:', error);
       return null;
     }
 
     return data as Realtor;
   } catch (err) {
-    console.error('Failed to fetch realtor:', err);
+    console.error('Failed to fetch realtor by ref:', err);
     return null;
   }
+}
+
+/**
+ * Backward compatibility wrappers
+ */
+export function getTenantSubdomain(): string {
+  return getTenantRef();
+}
+
+export async function fetchRealtorBySubdomain(subdomain: string): Promise<Realtor | null> {
+  return fetchRealtorByRef(subdomain);
 }
 
 /**

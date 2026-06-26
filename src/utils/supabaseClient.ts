@@ -20,6 +20,7 @@ const DEFAULT_REALTOR = {
   target_subdomain: 'york',
   default_area: 'York, PA',
   facebook_pixel_id: '',
+  ref_id: 1,
   created_at: new Date().toISOString()
 };
 
@@ -31,6 +32,7 @@ const TAMPA_REALTOR = {
   target_subdomain: 'tampa',
   default_area: 'Tampa Bay',
   facebook_pixel_id: '',
+  ref_id: 2,
   created_at: new Date().toISOString()
 };
 
