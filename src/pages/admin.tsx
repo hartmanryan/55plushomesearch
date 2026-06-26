@@ -81,6 +81,7 @@ export default function Admin() {
   const [settingsPhone, setSettingsPhone] = useState('');
   const [settingsEmail, setSettingsEmail] = useState('');
   const [settingsDefaultArea, setSettingsDefaultArea] = useState('');
+  const [settingsFacebookPixelId, setSettingsFacebookPixelId] = useState('');
   const [settingsNotice, setSettingsNotice] = useState<string | null>(null);
   const [settingsLoading, setSettingsLoading] = useState(false);
 
@@ -235,6 +236,7 @@ export default function Admin() {
       setSettingsPhone(realtor.phone);
       setSettingsEmail(realtor.email);
       setSettingsDefaultArea(realtor.default_area || '');
+      setSettingsFacebookPixelId(realtor.facebook_pixel_id || '');
     }
   }, [realtor]);
 
@@ -250,7 +252,8 @@ export default function Admin() {
         name: settingsName.trim(),
         phone: settingsPhone.trim(),
         email: settingsEmail.trim(),
-        default_area: settingsDefaultArea.trim()
+        default_area: settingsDefaultArea.trim(),
+        facebook_pixel_id: settingsFacebookPixelId.trim()
       };
 
       const { data, error } = await supabase
@@ -264,6 +267,9 @@ export default function Admin() {
 
       if (data) {
         setRealtor(data as Realtor);
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('fb-pixel-updated', { detail: data.facebook_pixel_id || '' }));
+        }
         setSettingsNotice('Profile settings updated successfully!');
         setTimeout(() => setSettingsNotice(null), 4000);
       }
@@ -1454,6 +1460,19 @@ export default function Admin() {
                       required
                     />
                     <p className="text-xs text-foreground/50 mt-1.5">This controls the dynamic region name in the main headline of your landing page.</p>
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label htmlFor="settings-facebook-pixel-id" className="block text-sm font-extrabold text-foreground uppercase tracking-wider mb-2">Facebook Pixel ID</label>
+                    <input
+                      type="text"
+                      id="settings-facebook-pixel-id"
+                      value={settingsFacebookPixelId}
+                      onChange={(e) => setSettingsFacebookPixelId(e.target.value)}
+                      className="w-full border border-border-custom p-3 rounded-xl text-base bg-[#FAF9F5]/30 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
+                      placeholder="e.g. 123456789012345"
+                    />
+                    <p className="text-xs text-foreground/50 mt-1.5">Enter your Facebook Pixel ID to automatically track website conversions and PageView events.</p>
                   </div>
 
                   <div className="sm:col-span-2 bg-[#FAF9F5]/50 border border-border-custom/80 p-4.5 rounded-xl space-y-2">

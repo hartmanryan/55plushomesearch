@@ -7,6 +7,7 @@ export interface Realtor {
   phone: string;
   target_subdomain: string;
   default_area?: string;
+  facebook_pixel_id?: string;
   created_at: string;
 }
 
