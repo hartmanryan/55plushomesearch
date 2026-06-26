@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { 
@@ -77,6 +77,7 @@ export default function Admin() {
   };
 
   // Realtor Settings state
+  const hasInitializedRef = useRef(false);
   const [settingsName, setSettingsName] = useState('');
   const [settingsPhone, setSettingsPhone] = useState('');
   const [settingsEmail, setSettingsEmail] = useState('');
@@ -223,6 +224,7 @@ export default function Admin() {
   };
 
   useEffect(() => {
+    hasInitializedRef.current = false;
     loadAdminData();
     // Poll for lead and message updates to keep live takeover synchronized
     const interval = setInterval(loadAdminData, 5000);
@@ -231,12 +233,13 @@ export default function Admin() {
 
   // Initialize settings input values once realtor is loaded or changed
   useEffect(() => {
-    if (realtor) {
+    if (realtor && !hasInitializedRef.current) {
       setSettingsName(realtor.name);
       setSettingsPhone(realtor.phone);
       setSettingsEmail(realtor.email);
       setSettingsDefaultArea(realtor.default_area || '');
       setSettingsFacebookPixelId(realtor.facebook_pixel_id || '');
+      hasInitializedRef.current = true;
     }
   }, [realtor]);
 
