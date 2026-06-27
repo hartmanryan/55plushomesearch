@@ -629,7 +629,7 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
             {step === 5 && (
               <div>
                 <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-8 leading-tight tracking-tight text-center">
-                  What's Your Time Line For A Move
+                  Your Timeline?
                 </h2>
 
                 <div className="space-y-4">
