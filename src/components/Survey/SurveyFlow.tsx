@@ -359,12 +359,9 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
             {/* Step 1: Must-Have Amenities */}
             {step === 1 && (
               <div>
-                <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-1 leading-tight tracking-tight text-center">
-                  Select 3 Amenities Most Important to You
+                <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-8 leading-tight tracking-tight text-center">
+                  First, Select 3 Amenities Most Important to You
                 </h2>
-                <p className="text-base text-slate-500 mb-8 text-center">
-                  Pick exactly 3 amenities to automatically continue. (Selected: {mustHaveAmenities.length}/3)
-                </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                   {/* Amenity 1 */}
