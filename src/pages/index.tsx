@@ -134,22 +134,32 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Realtor Host Badge */}
-            <div className="flex items-center gap-4 bg-white/95 py-2.5 px-4 rounded-xl border border-border-custom shadow-2xs">
-              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-lg">
-                {realtor.name.split(' ').map(n => n[0]).join('')}
-              </div>
-              <div className="text-left">
-                <p className="text-[10px] font-extrabold text-primary uppercase tracking-wider">Local Expert Advisor</p>
-                <p className="text-lg font-black text-foreground">{realtor.name}</p>
-              </div>
-              <a 
-                href={`tel:${realtor.phone}`}
-                className="ml-2 bg-primary hover:bg-primary-hover text-white p-2.5 rounded-lg transition-colors flex items-center justify-center focus:ring-4 focus:ring-primary/20"
-                aria-label={`Call Realtor ${realtor.name} at ${realtor.phone}`}
+            {/* Realtor Host Badge & View on Map Button */}
+            <div className="flex items-center gap-4 flex-wrap justify-center sm:justify-end">
+              <Link
+                href={`/map${subdomain !== 'york' ? `?id=${subdomain}` : ''}`}
+                className="text-sm font-serif font-bold text-foreground/75 hover:text-primary transition-all border-2 border-border-custom hover:border-primary/45 py-2 px-3.5 rounded-xl bg-white shadow-2xs cursor-pointer flex items-center gap-2"
               >
-                <Phone className="w-5 h-5" />
-              </a>
+                <MapPin className="w-4.5 h-4.5 text-primary shrink-0" />
+                <span>View On Map</span>
+              </Link>
+
+              <div className="flex items-center gap-4 bg-white/95 py-2.5 px-4 rounded-xl border border-border-custom shadow-2xs">
+                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-lg">
+                  {realtor.name.split(' ').map(n => n[0]).join('')}
+                </div>
+                <div className="text-left">
+                  <p className="text-[10px] font-extrabold text-primary uppercase tracking-wider">Local Expert Advisor</p>
+                  <p className="text-lg font-black text-foreground">{realtor.name}</p>
+                </div>
+                <a 
+                  href={`tel:${realtor.phone}`}
+                  className="ml-2 bg-primary hover:bg-primary-hover text-white p-2.5 rounded-lg transition-colors flex items-center justify-center focus:ring-4 focus:ring-primary/20"
+                  aria-label={`Call Realtor ${realtor.name} at ${realtor.phone}`}
+                >
+                  <Phone className="w-5 h-5" />
+                </a>
+              </div>
             </div>
           </div>
         </header>

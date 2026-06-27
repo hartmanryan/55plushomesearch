@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, Sparkles, User, ShieldAlert, Phone } from 'lucide-react';
-import { supabase } from '../../utils/supabaseClient';
+import { supabase, isMockClient } from '../../utils/supabaseClient';
 
 interface Message {
   id?: string;
@@ -13,15 +13,17 @@ interface ChatFeedProps {
   leadId: string;
   realtorName: string;
   initialQuestion?: string;
+  lead?: any;
+  communities?: any[];
 }
 
-export default function ChatFeed({ leadId, realtorName, initialQuestion }: ChatFeedProps) {
+export default function ChatFeed({ leadId, realtorName, initialQuestion, lead, communities }: ChatFeedProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
   const [isTakeoverRequested, setIsTakeoverRequested] = useState(false);
   const [takeoverStatusMessage, setTakeoverStatusMessage] = useState('');
-  const feedEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Suggestions for 55+ demographic (quick clicks)
   const suggestions = [
@@ -41,7 +43,15 @@ export default function ChatFeed({ leadId, realtorName, initialQuestion }: ChatF
         .order('created_at', { ascending: true });
 
       if (!error && data) {
-        setMessages(data as Message[]);
+        setMessages((prev) => {
+          if (prev.length !== data.length) {
+            return data as Message[];
+          }
+          const hasDifference = data.some((msg: any, idx: number) => {
+            return prev[idx].message !== msg.message || prev[idx].sender !== msg.sender;
+          });
+          return hasDifference ? (data as Message[]) : prev;
+        });
       }
 
       // Check takeover status
@@ -82,9 +92,11 @@ export default function ChatFeed({ leadId, realtorName, initialQuestion }: ChatF
     }
   }, [initialQuestion]);
 
-  // Scroll to bottom
+  // Scroll to bottom of chat feed only
   useEffect(() => {
-    feedEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+    }
   }, [messages, loading]);
 
   const handleSendMessage = async (textToSend: string) => {
@@ -116,12 +128,24 @@ export default function ChatFeed({ leadId, realtorName, initialQuestion }: ChatF
         },
         body: JSON.stringify({
           leadId,
-          message: text
+          message: text,
+          lead,
+          communities
         })
       });
 
       if (!response.ok) {
         throw new Error('Completion server error');
+      }
+
+      const resData = await response.json();
+      if (resData.reply && isMockClient) {
+        // In local mock client mode, manually write AI response to client local database
+        await supabase.from('chat_messages').insert({
+          lead_id: leadId,
+          sender: 'ai',
+          message: resData.reply
+        });
       }
 
       // Refresh chat to show AI response
@@ -171,7 +195,7 @@ export default function ChatFeed({ leadId, realtorName, initialQuestion }: ChatF
       )}
 
       {/* Message Feed Area */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-background">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-5 space-y-4 bg-background">
         {messages.length === 0 && !loading && (
           <div className="text-center py-8 px-4 space-y-4">
             <div className="w-14 h-14 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto">
@@ -241,7 +265,6 @@ export default function ChatFeed({ leadId, realtorName, initialQuestion }: ChatF
             </div>
           </div>
         )}
-        <div ref={feedEndRef} />
       </div>
 
       {/* Suggestion Chips */}

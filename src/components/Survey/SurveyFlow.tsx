@@ -49,6 +49,7 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
   const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [showWhatsIncluded, setShowWhatsIncluded] = useState(false);
 
   // Survey state
   const [currentResidence, setCurrentResidence] = useState('');
@@ -58,6 +59,10 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [streetAddress, setStreetAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [stateVal, setStateVal] = useState('');
+  const [zip, setZip] = useState('');
   const [bedrooms, setBedrooms] = useState(2);
   const [baths, setBaths] = useState(2);
   const [budgetMin, setBudgetMin] = useState<number | null>(null);
@@ -67,14 +72,61 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
   const [regionName, setRegionName] = useState(realtor.target_subdomain === 'york' ? 'York County' : 'Tampa Bay');
 
   useEffect(() => {
-    if (router.isReady && router.query.area) {
-      setRegionName(router.query.area as string);
+    if (router.isReady) {
+      if (router.query.area) {
+        setRegionName(router.query.area as string);
+      }
+      if (router.query.name) {
+        setName(router.query.name as string);
+      }
+      if (router.query.email) {
+        setEmail(router.query.email as string);
+      }
+      if (router.query.phone) {
+        setPhone(router.query.phone as string);
+      }
+      if (router.query.street_address) {
+        setStreetAddress(router.query.street_address as string);
+      } else if (router.query.street) {
+        setStreetAddress(router.query.street as string);
+      } else if (router.query.address) {
+        setStreetAddress(router.query.address as string);
+      }
+      if (router.query.city) {
+        setCity(router.query.city as string);
+      }
+      if (router.query.state) {
+        setStateVal(router.query.state as string);
+      }
+      if (router.query.zip) {
+        setZip(router.query.zip as string);
+      }
     }
-  }, [router.isReady, router.query.area]);
+  }, [
+    router.isReady,
+    router.query.area,
+    router.query.name,
+    router.query.email,
+    router.query.phone,
+    router.query.street_address,
+    router.query.street,
+    router.query.address,
+    router.query.city,
+    router.query.state,
+    router.query.zip
+  ]);
 
   useEffect(() => {
     onStepChange?.(step);
   }, [step, onStepChange]);
+
+  // Auto-submit step 5 when all required parameters exist
+  useEffect(() => {
+    if (step === 5 && name.trim() && email.trim() && phone.trim() && !loading) {
+      const dummyEvent = { preventDefault: () => {} } as React.FormEvent;
+      handleSubmit(dummyEvent);
+    }
+  }, [step, name, email, phone]);
 
   const handleNextStep = () => {
     setErrorMsg('');
@@ -92,10 +144,10 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
     if (mustHaveAmenities.includes(amenity)) {
       setMustHaveAmenities(mustHaveAmenities.filter((a) => a !== amenity));
     } else {
-      if (mustHaveAmenities.length >= 2) return;
+      if (mustHaveAmenities.length >= 3) return;
       const updated = [...mustHaveAmenities, amenity];
       setMustHaveAmenities(updated);
-      if (updated.length === 2) {
+      if (updated.length === 3) {
         setTimeout(() => {
           handleNextStep();
         }, 400);
@@ -108,7 +160,7 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
     setErrorMsg('');
 
     if (!name.trim() || !email.trim() || !phone.trim()) {
-      setErrorMsg('Please fill in all contact fields to unlock your matches.');
+      setErrorMsg('Please fill in your name, email, and phone to unlock your matches.');
       return;
     }
 
@@ -121,6 +173,10 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
         name: name.trim(),
         email: email.trim().toLowerCase(),
         phone: phone.trim(),
+        street_address: streetAddress.trim(),
+        city: city.trim(),
+        state: stateVal.trim(),
+        zip: zip.trim(),
         moving_timeline: movingTimeline || 'Browsing',
         budget_min: budgetMin,
         budget_max: budgetMax,
@@ -159,7 +215,7 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
       } else {
         // Redirect to portal with lead ID
         const activeTenant = getTenantSubdomain();
-        const tenantParam = activeTenant ? `&tenant=${activeTenant}` : '';
+        const tenantParam = activeTenant ? `&id=${activeTenant}` : '';
         router.push(`/portal?leadId=${data.id}${tenantParam}`);
       }
     } catch (err: any) {
@@ -171,7 +227,7 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
   };
 
   // Progress Bar percentage
-  const progressPercent = ((step - 1) / 6) * 100;
+  const progressPercent = ((step - 1) / 4) * 100;
 
   return (
     <div className="w-full max-w-2xl mx-auto bg-card rounded-2xl editorial-shadow border border-border-custom overflow-hidden">
@@ -211,34 +267,30 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
             }}
             className="w-full"
           >
-            {/* Step 1: Current Residence Situation */}
+            {/* Step 1: Destination & Identity Mapping (Timeline) */}
             {step === 1 && (
               <div>
                 <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-8 leading-tight tracking-tight text-center">
-                  Do You Currently Live In The {regionName} Area?
+                  Which Best Describes You?
                 </h2>
 
-                <div className="grid grid-cols-1 gap-4">
+                <div className="space-y-4">
                   <motion.button
                     type="button"
                     whileHover={{ y: -2, borderColor: '#9A7F56' }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => {
-                      setCurrentResidence('Yes, I Own A Home Here');
+                      setMovingTimeline('Moving Soon (0-3 Months)');
                       handleNextStep();
                     }}
-                    className={`w-full text-left p-6 rounded-xl border-2 flex items-center justify-between interactive-target group shadow-2xs cursor-pointer ${
-                      currentResidence === 'Yes, I Own A Home Here' 
-                        ? 'border-primary bg-primary/5' 
-                        : 'border-border-custom bg-white'
-                    }`}
+                    className="w-full text-left bg-white border-2 border-border-custom p-6 rounded-xl flex items-center justify-between interactive-target group shadow-2xs cursor-pointer"
                   >
                     <div className="flex items-center">
-                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4">
-                        <Home className="w-6 h-6" />
+                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4 group-hover:bg-primary/10 transition-colors">
+                        <Calendar className="w-6 h-6" />
                       </div>
                       <div>
-                        <span className="block text-xl font-serif font-bold text-foreground">Yes, I Own A Home Here</span>
+                        <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">Moving Soon (0-3 Months)</span>
                       </div>
                     </div>
                     <ArrowRight className="w-5 h-5 text-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all" />
@@ -249,21 +301,17 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
                     whileHover={{ y: -2, borderColor: '#9A7F56' }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => {
-                      setCurrentResidence('Yes, I Rent Here');
+                      setMovingTimeline('Moving in 3-12 Months');
                       handleNextStep();
                     }}
-                    className={`w-full text-left p-6 rounded-xl border-2 flex items-center justify-between interactive-target group shadow-2xs cursor-pointer ${
-                      currentResidence === 'Yes, I Rent Here' 
-                        ? 'border-primary bg-primary/5' 
-                        : 'border-border-custom bg-white'
-                    }`}
+                    className="w-full text-left bg-white border-2 border-border-custom p-6 rounded-xl flex items-center justify-between interactive-target group shadow-2xs cursor-pointer"
                   >
                     <div className="flex items-center">
-                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4">
-                        <Building className="w-6 h-6" />
+                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4 group-hover:bg-primary/10 transition-colors">
+                        <Calendar className="w-6 h-6" />
                       </div>
                       <div>
-                        <span className="block text-xl font-serif font-bold text-foreground">Yes, I Rent Here</span>
+                        <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">Moving in 3-12 Months</span>
                       </div>
                     </div>
                     <ArrowRight className="w-5 h-5 text-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all" />
@@ -274,21 +322,17 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
                     whileHover={{ y: -2, borderColor: '#9A7F56' }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => {
-                      setCurrentResidence('No, I Might Be Moving From Somewhere Else');
+                      setMovingTimeline('Just Exploring Options');
                       handleNextStep();
                     }}
-                    className={`w-full text-left p-6 rounded-xl border-2 flex items-center justify-between interactive-target group shadow-2xs cursor-pointer ${
-                      currentResidence === 'No, I Might Be Moving From Somewhere Else' 
-                        ? 'border-primary bg-primary/5' 
-                        : 'border-border-custom bg-white'
-                    }`}
+                    className="w-full text-left bg-white border-2 border-border-custom p-6 rounded-xl flex items-center justify-between interactive-target group shadow-2xs cursor-pointer"
                   >
                     <div className="flex items-center">
-                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4">
-                        <Compass className="w-6 h-6" />
+                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4 group-hover:bg-primary/10 transition-colors">
+                        <Calendar className="w-6 h-6" />
                       </div>
                       <div>
-                        <span className="block text-xl font-serif font-bold text-foreground">No, I Might Be Moving From Somewhere Else</span>
+                        <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">Just Exploring Options</span>
                       </div>
                     </div>
                     <ArrowRight className="w-5 h-5 text-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all" />
@@ -301,10 +345,10 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
             {step === 2 && (
               <div>
                 <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-1 leading-tight tracking-tight text-center">
-                  Select 2 Amenities Most Important to You
+                  Select 3 Amenities Most Important to You
                 </h2>
                 <p className="text-base text-slate-500 mb-8 text-center">
-                  Pick exactly 2 amenities to automatically continue. (Selected: {mustHaveAmenities.length}/2)
+                  Pick exactly 3 amenities to automatically continue. (Selected: {mustHaveAmenities.length}/3)
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
@@ -475,8 +519,49 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
                       <span className="block text-xs sm:text-sm text-foreground/50 mt-1">Fenced dog parks and wash stations</span>
                     </div>
                   </motion.button>
-                </div>
 
+                  {/* Amenity 9: Single Story Living */}
+                  <motion.button
+                    type="button"
+                    whileHover={{ y: -2, borderColor: '#9A7F56' }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => toggleAmenity('Single-Story Living / First-Floor Owner Suites')}
+                    className={`p-5 rounded-xl border-2 text-left interactive-target transition-all flex items-start shadow-2xs cursor-pointer ${
+                      mustHaveAmenities.includes('Single-Story Living / First-Floor Owner Suites')
+                        ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+                        : 'border-border-custom bg-white'
+                    }`}
+                  >
+                    <div className="p-2.5 bg-primary/5 text-primary rounded-lg mr-3.5 shrink-0">
+                      <Home className="w-5.5 h-5.5" />
+                    </div>
+                    <div>
+                      <span className="block text-lg font-serif font-bold text-foreground leading-tight">Single-Story Living</span>
+                      <span className="block text-xs sm:text-sm text-foreground/50 mt-1">Stair-free floorplans, main level primary suites</span>
+                    </div>
+                  </motion.button>
+
+                  {/* Amenity 10: RV & Boat Storage */}
+                  <motion.button
+                    type="button"
+                    whileHover={{ y: -2, borderColor: '#9A7F56' }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => toggleAmenity('RV & Boat Storage Yard')}
+                    className={`p-5 rounded-xl border-2 text-left interactive-target transition-all flex items-start shadow-2xs cursor-pointer ${
+                      mustHaveAmenities.includes('RV & Boat Storage Yard')
+                        ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+                        : 'border-border-custom bg-white'
+                    }`}
+                  >
+                    <div className="p-2.5 bg-primary/5 text-primary rounded-lg mr-3.5 shrink-0">
+                      <Compass className="w-5.5 h-5.5" />
+                    </div>
+                    <div>
+                      <span className="block text-lg font-serif font-bold text-foreground leading-tight">RV & Boat Storage</span>
+                      <span className="block text-xs sm:text-sm text-foreground/50 mt-1">On-site secure parking for travel trailers & boats</span>
+                    </div>
+                  </motion.button>
+                </div>
               </div>
             )}
 
@@ -484,7 +569,7 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
             {step === 3 && (
               <div>
                 <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-8 leading-tight tracking-tight">
-                  What style of home fits your lifestyle?
+                  Which Style Of Home Fits Your Lifestyle Best?
                 </h2>
 
                 <div className="grid grid-cols-1 gap-4">
@@ -569,31 +654,34 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
               </div>
             )}
 
-            {/* Step 4: Destination & Identity Mapping */}
+            {/* Step 4: Current Residence Situation */}
             {step === 4 && (
               <div>
-                <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-8 leading-tight tracking-tight">
-                  What is your timeline?
+                <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-8 leading-tight tracking-tight text-center">
+                  Do You Currently Live In The {regionName} Area?
                 </h2>
 
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 gap-4">
                   <motion.button
                     type="button"
                     whileHover={{ y: -2, borderColor: '#9A7F56' }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => {
-                      setMovingTimeline('ASAP');
+                      setCurrentResidence('Yes, I Own A Home Here');
                       handleNextStep();
                     }}
-                    className="w-full text-left bg-white border-2 border-border-custom p-5 rounded-xl flex items-center justify-between interactive-target group shadow-2xs cursor-pointer"
+                    className={`w-full text-left p-6 rounded-xl border-2 flex items-center justify-between interactive-target group shadow-2xs cursor-pointer ${
+                      currentResidence === 'Yes, I Own A Home Here' 
+                        ? 'border-primary bg-primary/5' 
+                        : 'border-border-custom bg-white'
+                    }`}
                   >
                     <div className="flex items-center">
-                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4 group-hover:bg-primary/10 transition-colors">
-                        <Calendar className="w-6 h-6" />
+                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4">
+                        <Home className="w-6 h-6" />
                       </div>
                       <div>
-                        <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">Yes, relocator status</span>
-                        <span className="block text-sm sm:text-base text-foreground/50 mt-0.5">I am looking to relocate as soon as possible</span>
+                        <span className="block text-xl font-serif font-bold text-foreground">Yes, I Own A Home Here</span>
                       </div>
                     </div>
                     <ArrowRight className="w-5 h-5 text-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all" />
@@ -604,18 +692,21 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
                     whileHover={{ y: -2, borderColor: '#9A7F56' }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => {
-                      setMovingTimeline('3-6 months');
+                      setCurrentResidence('Yes, I Rent Here');
                       handleNextStep();
                     }}
-                    className="w-full text-left bg-white border-2 border-border-custom p-5 rounded-xl flex items-center justify-between interactive-target group shadow-2xs cursor-pointer"
+                    className={`w-full text-left p-6 rounded-xl border-2 flex items-center justify-between interactive-target group shadow-2xs cursor-pointer ${
+                      currentResidence === 'Yes, I Rent Here' 
+                        ? 'border-primary bg-primary/5' 
+                        : 'border-border-custom bg-white'
+                    }`}
                   >
                     <div className="flex items-center">
-                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4 group-hover:bg-primary/10 transition-colors">
-                        <Calendar className="w-6 h-6" />
+                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4">
+                        <Building className="w-6 h-6" />
                       </div>
                       <div>
-                        <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">Moving in 3-6 months</span>
-                        <span className="block text-sm sm:text-base text-foreground/50 mt-0.5">Relocating in the near future</span>
+                        <span className="block text-xl font-serif font-bold text-foreground">Yes, I Rent Here</span>
                       </div>
                     </div>
                     <ArrowRight className="w-5 h-5 text-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all" />
@@ -626,18 +717,21 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
                     whileHover={{ y: -2, borderColor: '#9A7F56' }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => {
-                      setMovingTimeline('Browsing');
+                      setCurrentResidence('No, I Might Be Moving From Somewhere Else');
                       handleNextStep();
                     }}
-                    className="w-full text-left bg-white border-2 border-border-custom p-5 rounded-xl flex items-center justify-between interactive-target group shadow-2xs cursor-pointer"
+                    className={`w-full text-left p-6 rounded-xl border-2 flex items-center justify-between interactive-target group shadow-2xs cursor-pointer ${
+                      currentResidence === 'No, I Might Be Moving From Somewhere Else' 
+                        ? 'border-primary bg-primary/5' 
+                        : 'border-border-custom bg-white'
+                    }`}
                   >
                     <div className="flex items-center">
-                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4 group-hover:bg-primary/10 transition-colors">
-                        <Calendar className="w-6 h-6" />
+                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4">
+                        <Compass className="w-6 h-6" />
                       </div>
                       <div>
-                        <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">Just exploring options</span>
-                        <span className="block text-sm sm:text-base text-foreground/50 mt-0.5">Browsing neighborhoods and details</span>
+                        <span className="block text-xl font-serif font-bold text-foreground">No, I Might Be Moving From Somewhere Else</span>
                       </div>
                     </div>
                     <ArrowRight className="w-5 h-5 text-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all" />
@@ -646,188 +740,54 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
               </div>
             )}
 
-            {/* Step 5: Price Range Selectors */}
+            {/* Step 5: Secure Value-Add Contact Capture */}
             {step === 5 && (
               <div>
                 <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-4 leading-tight tracking-tight text-center">
-                  What is your target price range?
+                  Create FREE Account & See Your Recommended Communities
                 </h2>
-                <p className="text-base text-slate-500 mb-8 text-center">
-                  Select a minimum and maximum budget to narrow down your custom matching communities.
-                </p>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 text-left max-w-lg mx-auto">
-                  {/* Min Budget Column */}
-                  <div>
-                    <h3 className="text-base font-serif font-extrabold text-foreground mb-3 text-center md:text-left">
-                      Minimum Price
-                    </h3>
-                    <div className="grid grid-cols-2 gap-2">
-                      {[
-                        { label: 'No Min', value: null },
-                        { label: '$200k', value: 200000 },
-                        { label: '$250k', value: 250000 },
-                        { label: '$300k', value: 300000 },
-                        { label: '$350k', value: 350000 },
-                        { label: '$400k', value: 400000 },
-                        { label: '$450k', value: 450000 },
-                        { label: '$500k', value: 500000 }
-                      ].map((opt) => {
-                        const isSelected = budgetMin === opt.value;
-                        return (
-                          <button
-                            key={`min-${opt.value}`}
-                            type="button"
-                            onClick={() => {
-                              setBudgetMin(opt.value);
-                              if (opt.value !== null && budgetMax !== null && budgetMax < opt.value) {
-                                setBudgetMax(null);
-                              }
-                            }}
-                            className={`py-2.5 px-3 rounded-lg border text-sm font-bold text-center transition-all cursor-pointer ${
-                              isSelected
-                                ? 'bg-primary text-white border-primary shadow-2xs'
-                                : 'bg-white text-foreground border-border-custom hover:border-primary/50'
-                            }`}
-                          >
-                            {opt.label}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Max Budget Column */}
-                  <div>
-                    <h3 className="text-base font-serif font-extrabold text-foreground mb-3 text-center md:text-left">
-                      Maximum Price
-                    </h3>
-                    <div className="grid grid-cols-2 gap-2">
-                      {[
-                        { label: '$300k', value: 300000 },
-                        { label: '$450k', value: 450000 },
-                        { label: '$600k', value: 600000 },
-                        { label: '$750k', value: 750000 },
-                        { label: '$1M', value: 1000000 },
-                        { label: '$2M', value: 2000000 },
-                        { label: '$5M', value: 5000000 },
-                        { label: 'No Max', value: null }
-                      ].map((opt) => {
-                        const isSelected = budgetMax === opt.value;
-                        const isDisabled = budgetMin !== null && opt.value !== null && opt.value <= budgetMin;
-                        return (
-                          <button
-                            key={`max-${opt.value}`}
-                            type="button"
-                            disabled={isDisabled}
-                            onClick={() => setBudgetMax(opt.value)}
-                            className={`py-2.5 px-3 rounded-lg border text-sm font-bold text-center transition-all cursor-pointer ${
-                              isDisabled
-                                ? 'opacity-30 cursor-not-allowed bg-slate-50 border-slate-100 text-slate-400'
-                                : isSelected
-                                ? 'bg-primary text-white border-primary shadow-2xs'
-                                : 'bg-white text-foreground border-border-custom hover:border-primary/50'
-                            }`}
-                          >
-                            {opt.label}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
+                <div className="mb-8 text-center">
+                  <button
+                    type="button"
+                    onClick={() => setShowWhatsIncluded(!showWhatsIncluded)}
+                    className="inline-flex items-center gap-1.5 text-primary hover:text-primary-hover font-serif font-bold text-lg sm:text-xl transition-colors cursor-pointer border-0 bg-transparent py-1.5 px-4 rounded-lg hover:bg-primary/5 focus:outline-hidden"
+                  >
+                    <span>What's included?</span>
+                    <ChevronDown className={`w-5 h-5 transition-transform duration-200 ${showWhatsIncluded ? 'rotate-180' : ''}`} />
+                  </button>
+                  
+                  <AnimatePresence>
+                    {showWhatsIncluded && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden mt-3 max-w-xl mx-auto text-left bg-slate-50 border border-border-custom rounded-xl p-5 sm:p-6 shadow-2xs"
+                      >
+                        <ul className="space-y-3.5 text-base sm:text-lg text-slate-700 list-none p-0 m-0">
+                          <li className="flex items-start gap-3">
+                            <span className="text-primary mt-0.5 select-none font-bold">✓</span>
+                            <span>Instantly See Your Best Active Adult Community Matches</span>
+                          </li>
+                          <li className="flex items-start gap-3">
+                            <span className="text-primary mt-0.5 select-none font-bold">✓</span>
+                            <span>Get Fast Answers From Our AI Concierge</span>
+                          </li>
+                          <li className="flex items-start gap-3">
+                            <span className="text-primary mt-0.5 select-none font-bold">✓</span>
+                            <span>Weekly Notification Email About Any Local Price Reductions & Special Builder Deals & Incentives</span>
+                          </li>
+                          <li className="flex items-start gap-3">
+                            <span className="text-primary mt-0.5 select-none font-bold">✓</span>
+                            <span>If you enter your address you'll receive a detailed home value report that shows what your home might sell for today, so you know the value before you make your move.</span>
+                          </li>
+                        </ul>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
-
-                <motion.button
-                  type="button"
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                  onClick={handleNextStep}
-                  className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4.5 px-6 rounded-xl text-xl flex items-center justify-center transition-colors interactive-target shadow-xs cursor-pointer font-serif"
-                >
-                  Continue to Almost Done
-                  <ArrowRight className="w-6 h-6 ml-2" />
-                </motion.button>
-              </div>
-            )}
-
-            {/* Step 6: Almost Done - Bedrooms & Baths Sliders */}
-            {step === 6 && (
-              <div>
-                <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-8 leading-tight tracking-tight text-center">
-                  Almost Done
-                </h2>
-
-                <div className="space-y-8 mb-8 text-left max-w-md mx-auto">
-                  {/* Bedrooms Slider */}
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <label className="text-lg font-serif font-bold text-foreground">Bedrooms</label>
-                      <span className="text-2xl font-serif font-bold text-primary">{bedrooms} {bedrooms === 5 ? '5+ Beds' : bedrooms === 1 ? '1 Bed' : `${bedrooms} Beds`}</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="1"
-                      max="5"
-                      step="1"
-                      value={bedrooms}
-                      onChange={(e) => setBedrooms(parseInt(e.target.value))}
-                      className="w-full accent-primary h-2 bg-border-custom rounded-lg appearance-none cursor-pointer"
-                    />
-                    <div className="flex justify-between text-xs text-foreground/45 font-bold px-1">
-                      <span>1 Bed</span>
-                      <span>2 Beds</span>
-                      <span>3 Beds</span>
-                      <span>4 Beds</span>
-                      <span>5+ Beds</span>
-                    </div>
-                  </div>
-
-                  {/* Baths Slider */}
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <label className="text-lg font-serif font-bold text-foreground">Bathrooms</label>
-                      <span className="text-2xl font-serif font-bold text-primary">{baths} {baths === 1 ? '1 Bath' : `${baths} Baths`}</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="1"
-                      max="4"
-                      step="0.5"
-                      value={baths}
-                      onChange={(e) => setBaths(parseFloat(e.target.value))}
-                      className="w-full accent-primary h-2 bg-border-custom rounded-lg appearance-none cursor-pointer"
-                    />
-                    <div className="flex justify-between text-xs text-foreground/45 font-bold px-1">
-                      <span>1 Bath</span>
-                      <span>2 Baths</span>
-                      <span>3 Baths</span>
-                      <span>4 Baths</span>
-                    </div>
-                  </div>
-                </div>
-
-                <motion.button
-                  type="button"
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                  onClick={handleNextStep}
-                  className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4.5 px-6 rounded-xl text-xl flex items-center justify-center transition-colors interactive-target shadow-xs cursor-pointer font-serif"
-                >
-                  Continue to Final Step
-                  <ArrowRight className="w-6 h-6 ml-2" />
-                </motion.button>
-              </div>
-            )}
-
-            {/* Step 7: Secure Value-Add Contact Capture */}
-            {step === 7 && (
-              <div>
-                <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-3 leading-tight tracking-tight text-center">
-                  Create Your FREE Account & See Your Custom Local Matches Now
-                </h2>
-                <p className="text-lg text-slate-500 mb-8 leading-relaxed text-center font-light">
-                  As part of your FREE membership, you'll receive a weekly email update every Saturday morning with a list of recently reduced 55+ homes, special builder incentives, and any scheduled weekend open houses. You can unsubscribe easily with 1 click.
-                </p>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
@@ -873,6 +833,75 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
                       placeholder="e.g. (717) 555-0123"
                       required
                     />
+                  </div>
+
+                  <div className="border-t border-border-custom pt-6">
+                    <h3 className="text-xl font-serif font-bold text-foreground mb-1">
+                      Bonus - Enter Your Address To Get A Custom Market Analysis Report For Your Current Home
+                    </h3>
+                    <p className="text-sm font-sans font-normal text-slate-500 mb-4">
+                      (so you can know what it might sell for before you make a move)
+                    </p>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <label htmlFor="survey-street" className="block text-base sm:text-lg font-serif font-bold text-foreground mb-2">
+                          Street Address
+                        </label>
+                        <input
+                          type="text"
+                          id="survey-street"
+                          value={streetAddress}
+                          onChange={(e) => setStreetAddress(e.target.value)}
+                          className="w-full border-2 border-border-custom p-4 rounded-xl text-lg sm:text-xl focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all bg-white"
+                          placeholder="e.g. 123 Main St"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                        <div className="sm:col-span-1">
+                          <label htmlFor="survey-city" className="block text-base sm:text-lg font-serif font-bold text-foreground mb-2">
+                            City
+                          </label>
+                          <input
+                            type="text"
+                            id="survey-city"
+                            value={city}
+                            onChange={(e) => setCity(e.target.value)}
+                            className="w-full border-2 border-border-custom p-4 rounded-xl text-lg sm:text-xl focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all bg-white"
+                            placeholder="e.g. York"
+                          />
+                        </div>
+
+                        <div>
+                          <label htmlFor="survey-state" className="block text-base sm:text-lg font-serif font-bold text-foreground mb-2">
+                            State
+                          </label>
+                          <input
+                            type="text"
+                            id="survey-state"
+                            value={stateVal}
+                            onChange={(e) => setStateVal(e.target.value)}
+                            className="w-full border-2 border-border-custom p-4 rounded-xl text-lg sm:text-xl focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all bg-white"
+                            placeholder="e.g. PA"
+                          />
+                        </div>
+
+                        <div>
+                          <label htmlFor="survey-zip" className="block text-base sm:text-lg font-serif font-bold text-foreground mb-2">
+                            ZIP Code
+                          </label>
+                          <input
+                            type="text"
+                            id="survey-zip"
+                            value={zip}
+                            onChange={(e) => setZip(e.target.value)}
+                            className="w-full border-2 border-border-custom p-4 rounded-xl text-lg sm:text-xl focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all bg-white"
+                            placeholder="e.g. 17402"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   {errorMsg && (

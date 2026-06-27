@@ -6,26 +6,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { leadId, message } = req.body;
+  const { leadId, message, lead: reqLead, communities: reqCommunities } = req.body;
 
   if (!leadId || !message) {
     return res.status(400).json({ error: 'Missing leadId or message payload' });
   }
 
   try {
-    // 1. Fetch Lead
-    const { data: lead, error: leadError } = await supabase
-      .from('leads')
-      .select('*')
-      .eq('id', leadId)
-      .single();
+    console.log('Received request payload:', JSON.stringify(req.body, null, 2));
+    // 1. Resolve Lead (use req.body payload or fallback to database lookup)
+    let lead = reqLead;
+    if (!lead) {
+      const { data: leadData, error: leadError } = await supabase
+        .from('leads')
+        .select('*')
+        .eq('id', leadId)
+        .single();
+      
+      if (!leadError && leadData) {
+        lead = leadData;
+      }
+    }
 
-    if (leadError || !lead) {
+    if (!lead) {
       return res.status(404).json({ error: 'Lead profile not found' });
     }
 
     // 2. Fetch Realtor
-    const { data: realtor, error: realtorError } = await supabase
+    const { data: realtor } = await supabase
       .from('realtors')
       .select('*')
       .eq('id', lead.realtor_id)
@@ -34,13 +42,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const realtorName = realtor?.name || 'Walt Wensel';
     const realtorPhone = realtor?.phone || '(717) 555-0199';
 
-    // 3. Fetch Communities
-    const { data: communities } = await supabase
-      .from('communities')
-      .select('*')
-      .eq('realtor_id', lead.realtor_id);
-
-    const activeCommunities = communities || [];
+    // 3. Resolve Communities
+    let activeCommunities = reqCommunities || [];
+    if (!activeCommunities.length) {
+      const { data: communities } = await supabase
+        .from('communities')
+        .select('*')
+        .eq('realtor_id', lead.realtor_id);
+      activeCommunities = communities || [];
+    }
 
     // 4. Intent Evaluation (Takeover Trigger)
     const lowerMessage = message.toLowerCase();
@@ -91,6 +101,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       sender: 'ai',
       message: aiReplyText
     });
+
+    console.log('AI reply text returned to client:', aiReplyText);
 
     return res.status(200).json({ reply: aiReplyText });
   } catch (err: any) {
@@ -160,26 +172,60 @@ async function callGeminiAPI(
   userMessage: string,
   isTakeoverIntent: boolean
 ): Promise<string> {
-  const prompt = compileGroundingPrompt(lead, realtorName, communities, userMessage, isTakeoverIntent);
+  const systemPrompt = compileGroundingPrompt(lead, realtorName, communities, userMessage, isTakeoverIntent);
   
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
+          systemInstruction: {
+            parts: [{ text: systemPrompt }]
+          },
+          contents: [
+            {
+              role: 'user',
+              parts: [{ text: userMessage }]
+            }
+          ],
           generationConfig: {
             temperature: 0.3,
-            maxOutputTokens: 500
-          }
+            max_output_tokens: 8192
+          },
+          safety_settings: [
+            {
+              category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+              threshold: "BLOCK_NONE"
+            },
+            {
+              category: "HARM_CATEGORY_HATE_SPEECH",
+              threshold: "BLOCK_NONE"
+            },
+            {
+              category: "HARM_CATEGORY_HARASSMENT",
+              threshold: "BLOCK_NONE"
+            },
+            {
+              category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+              threshold: "BLOCK_NONE"
+            }
+          ]
         })
       }
     );
 
     const json = await response.json();
-    return json.candidates?.[0]?.content?.parts?.[0]?.text || generateSmartMockResponse(lead, realtorName, communities, userMessage, isTakeoverIntent);
+    console.log('Gemini API raw response:', JSON.stringify(json, null, 2));
+    if (json.error) {
+      console.error('Gemini API returned error details:', JSON.stringify(json.error, null, 2));
+    }
+    if (json.candidates?.[0]?.content?.parts?.[0]?.text) {
+      return json.candidates[0].content.parts[0].text;
+    }
+    console.warn('Gemini API candidates structure not found in response:', JSON.stringify(json, null, 2));
+    return generateSmartMockResponse(lead, realtorName, communities, userMessage, isTakeoverIntent);
   } catch (err) {
     console.error('Gemini API call failed, falling back:', err);
     return generateSmartMockResponse(lead, realtorName, communities, userMessage, isTakeoverIntent);
@@ -234,7 +280,7 @@ function compileGroundingPrompt(
   const botName = `${firstName}55`;
   return `You are ${botName}, an elite AI Concierge working directly on behalf of ${realtorName}, the premier local 55+ lifestyle real estate expert. 
 
-The user you are assisting is named ${lead.name}. They completed a survey with these preferences:
+The user you are assisting is named ${lead.name}. They completed a survey with these preferences for your background context:
 - Moving Timeline: ${lead.moving_timeline}
 - Preferred Layout: ${lead.preferred_style}
 - Key Priorities: ${lead.must_have_amenities?.join(', ') || 'None selected'}
@@ -243,11 +289,12 @@ You have access to a verified database of local neighborhoods for this Realtor. 
 ${JSON.stringify(communities, null, 2)}
 
 CONVERSATION INSTRUCTIONS:
-1. Warmly greet the user using their name. Highlight the 2-3 specific communities from the data that align with their preferences.
-2. Weave in the custom insider knowledge found in the 'realtor_notes' field naturally (e.g., "The social committee at Traditions is incredibly active...").
-3. Your ultimate goal is a soft conversion: offer to have ${realtorName} put together a direct list of active home inventory, calculate accurate monthly costs, or schedule a personalized neighborhood golf-cart tour.
-4. Never hallucinate or guess real estate structural facts. If information (like exact model pricing or tax variations) is missing, say: "${realtorName} has direct access to that. Let me look that up for you—should I have them text you that info?"
-5. Keep your response brief and easy to read (use formatting like bullet points or bold text where appropriate). Keep text sizing readable.
+1. Focus directly on answering the user's specific question using the data. Do NOT summarize or restate the user's survey preferences, moving timelines, or priorities at the start of your message unless directly relevant to their question.
+2. Weave in the custom insider knowledge found in the 'realtor_notes' field naturally where relevant.
+3. Keep your response brief, friendly, and easy to read.
+4. Gently but naturally invite the user to jump on a quick phone call or schedule a local neighborhood tour with ${realtorName} (for example: "Would you like me to have ${firstName} give you a quick call to answer this, or perhaps set up a golf-cart tour of these communities?").
+5. Never hallucinate or guess real estate structural facts. If information (like exact model pricing or tax variations) is missing, say: "${realtorName} has direct access to that. Let me look that up for you—should I have them text you that info?"
+6. DO NOT use any markdown formatting (such as asterisks, double asterisks for bolding, bullet points with asterisks/dashes, or headers). Write your response in clean, raw plain text, using normal paragraphs and line breaks.
 
 ${isTakeoverIntent ? `NOTICE: The user has indicated they want to contact a human, tour a home, or schedule a call. Reassure them that you have flagged their request for ${realtorName} and that they will be in touch shortly!` : ''}
 `;

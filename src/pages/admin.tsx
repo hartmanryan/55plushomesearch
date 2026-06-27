@@ -33,6 +33,10 @@ interface Lead {
   bathrooms?: number;
   is_live_takeover_requested: boolean;
   current_residence?: string;
+  street_address?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
   created_at: string;
 }
 
@@ -737,6 +741,11 @@ export default function Admin() {
                               <span>Email: {lead.email}</span>
                               <span>Phone: {lead.phone}</span>
                             </div>
+                            {(lead.street_address || lead.city || lead.state || lead.zip) && (
+                              <div className="text-sm text-foreground/60">
+                                <span>Mailing Address: {[lead.street_address, lead.city, lead.state, lead.zip].filter(Boolean).join(', ')}</span>
+                              </div>
+                            )}
 
                             <div className="pt-2 flex flex-wrap gap-2 text-xs font-semibold">
                               <span className="bg-primary/10 text-primary border border-primary/20 py-1 px-2.5 rounded">Timeline: {lead.moving_timeline}</span>

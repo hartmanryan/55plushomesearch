@@ -40,9 +40,9 @@ export interface Community {
 export function getTenantRef(): string {
   if (typeof window === 'undefined') return '1';
 
-  // 1. Check ref query parameter first
+  // 1. Check id, ref, or tenant query parameter first
   const urlParams = new URLSearchParams(window.location.search);
-  const queryRef = urlParams.get('ref');
+  const queryRef = urlParams.get('id') || urlParams.get('ref') || urlParams.get('tenant');
   if (queryRef) {
     localStorage.setItem('active_tenant_ref', queryRef);
     return queryRef;

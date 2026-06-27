@@ -62,7 +62,7 @@ export default function Portal() {
   
   // Custom design interactive states
   const [highlightedCommunityId, setHighlightedCommunityId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'chat' | 'map'>('chat');
+  const [leftTab, setLeftTab] = useState<'list' | 'map'>('list');
 
   // Fetch lead, realtor, and communities
   useEffect(() => {
@@ -179,7 +179,6 @@ export default function Portal() {
 
   const handleAskWaltAboutCommunity = (commName: string) => {
     setActiveQuestion(`What details can you give me about ${commName}?`);
-    setActiveTab('chat'); // Automatically switch tab to AI chat to handle the query
   };
 
   if (loading) {
@@ -219,7 +218,7 @@ export default function Portal() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <div className="min-h-screen bg-background flex flex-col text-foreground selection:bg-primary/20">
+      <div className="min-h-screen bg-background flex flex-col text-foreground selection:bg-primary/20 relative overflow-x-clip">
         {/* Header */}
         <header className="bg-white/80 backdrop-blur-md border-b border-border-custom py-5 px-6 sticky top-0 z-40 transition-colors">
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -268,8 +267,7 @@ export default function Portal() {
 
         {/* Main Dashboard Layout */}
         <div className="flex-1 max-w-7xl w-full mx-auto px-6 py-12 grid lg:grid-cols-12 gap-8">
-          
-          {/* Left Area: Matches Feed */}
+                   {/* Left Area: Matches Feed (List View or Map View) */}
           <div className="lg:col-span-7 space-y-8">
             <div className="space-y-3">
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-black text-foreground tracking-tight leading-tight">
@@ -280,209 +278,219 @@ export default function Portal() {
               </p>
             </div>
 
-            {/* Communities Cards */}
-            <div className="space-y-8">
-              {matchedCommunities.length === 0 ? (
-                <div className="bg-card rounded-2xl border border-border-custom p-8 text-center space-y-4 editorial-shadow">
-                  <p className="text-xl font-serif font-bold text-foreground">No direct matches</p>
-                  <p className="text-foreground/70 text-base">We couldn't find exact criteria matches. Ask Walt in the sidebar to review all available inventory.</p>
-                </div>
-              ) : (
-                matchedCommunities.map((comm) => (
-                  <motion.div 
-                    key={comm.id}
-                    onMouseEnter={() => setHighlightedCommunityId(comm.id)}
-                    onMouseLeave={() => setHighlightedCommunityId(null)}
-                    onClick={() => {
-                      setHighlightedCommunityId(comm.id);
-                    }}
-                    whileHover={{ y: -3 }}
-                    className={`bg-card rounded-2xl border-2 p-0 overflow-hidden relative editorial-shadow hover:shadow-md transition-all duration-300 ${
-                      highlightedCommunityId === comm.id 
-                        ? 'border-primary ring-2 ring-primary/10' 
-                        : 'border-border-custom hover:border-primary/40'
-                    }`}
-                  >
-                    {/* Visual Card Header Banner */}
-                    {comm.image_url && (
-                      <div className="relative w-full aspect-[21/9] sm:aspect-[16/7] overflow-hidden bg-background border-b border-border-custom">
-                        <img 
-                          src={comm.image_url} 
-                          alt={`${comm.name} visual preview`} 
-                          className="w-full h-full object-cover transform hover:scale-103 transition-transform duration-700 ease-out"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-                        
-                        {/* Overlay home types */}
-                        <div className="absolute bottom-4 left-4 bg-foreground/80 text-white font-extrabold text-[10px] tracking-wider uppercase py-1.5 px-3 rounded-lg border border-white/10 shadow-xs backdrop-blur-xs">
-                          {comm.home_types[0] || 'Active-Adult'}
-                        </div>
-                      </div>
-                    )}
+            {/* Sticky Left View Toggler Tabs */}
+            <div className="sticky top-[89px] z-30 bg-background/95 backdrop-blur-xs py-3 border-b border-border-custom/50">
+              <div className="bg-border-custom/45 p-1 rounded-xl flex gap-1 border border-border-custom max-w-[280px]">
+                <button
+                  type="button"
+                  onClick={() => setLeftTab('list')}
+                  className={`flex-1 py-2 px-3 rounded-lg text-sm font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer interactive-target ${
+                    leftTab === 'list'
+                      ? 'bg-white text-primary shadow-2xs border border-border-custom'
+                      : 'text-foreground/60 hover:text-foreground hover:bg-white/40'
+                  }`}
+                >
+                  <Building className="w-4 h-4" />
+                  List View
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLeftTab('map')}
+                  className={`flex-1 py-2 px-3 rounded-lg text-sm font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer interactive-target ${
+                    leftTab === 'map'
+                      ? 'bg-white text-primary shadow-2xs border border-border-custom'
+                      : 'text-foreground/60 hover:text-foreground hover:bg-white/40'
+                  }`}
+                >
+                  <Map className="w-4 h-4" />
+                  Map View
+                </button>
+              </div>
+            </div>
 
-                    {/* Top match score badge */}
-                    <div className="absolute top-4 right-4 bg-primary text-white font-serif font-bold px-3.5 py-1.5 rounded-lg text-xs uppercase tracking-wider flex items-center gap-1 shadow-md z-10">
-                      <Sparkles className="w-3.5 h-3.5 fill-white/25 text-white" />
-                      <span>{comm.score > 40 ? 'Best Match' : 'Strong Match'}</span>
-                    </div>
-
-                    <div className="p-6 sm:p-8 space-y-6">
-                      {/* Community Title */}
-                      <div className="space-y-1">
-                        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-foreground leading-tight">{comm.name}</h2>
-                        <p className="text-base text-foreground/60 flex items-center font-medium">
-                          <MapPin className="w-4.5 h-4.5 mr-1 text-primary/60" />
-                          {comm.region}
-                        </p>
-                      </div>
-
-                      {/* Financial Specs Grid */}
-                      <div className="grid grid-cols-2 gap-4 bg-background p-4 rounded-xl border border-border-custom">
-                        <div>
-                          <span className="block text-[10px] uppercase tracking-wider text-foreground/50 font-extrabold">Price Range</span>
-                          <span className="text-xl sm:text-2xl font-serif font-bold text-foreground">
-                            ${(comm.price_min / 1000).toFixed(0)}k - ${(comm.price_max / 1000).toFixed(0)}k
-                          </span>
-                        </div>
-                        <div>
-                          <span className="block text-[10px] uppercase tracking-wider text-foreground/50 font-extrabold">HOA Inclusions</span>
-                          <span className="text-xl sm:text-2xl font-serif font-bold text-primary">
-                            ${comm.hoa_fee}
-                            <span className="text-sm font-sans font-medium text-foreground/50">/{comm.hoa_frequency === 'monthly' ? 'mo' : comm.hoa_frequency}</span>
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* HOA Coverages */}
-                      <div className="space-y-2">
-                        <span className="block text-xs uppercase tracking-wider font-extrabold text-foreground/45">Included in HOA Fee:</span>
-                        <div className="flex flex-wrap gap-2">
-                          {comm.hoa_inclusions.map((inc: string, idx: number) => (
-                            <span 
-                              key={idx}
-                              className="bg-emerald-50/60 border border-emerald-200/50 text-emerald-800 text-sm font-semibold py-1.5 px-3 rounded-lg flex items-center gap-1.5"
-                            >
-                              <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
-                              {inc}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Amenities Checklist */}
-                      <div className="space-y-2">
-                        <span className="block text-xs uppercase tracking-wider font-extrabold text-foreground/45">Neighborhood Amenities:</span>
-                        <div className="flex flex-wrap gap-2">
-                          {comm.amenities.map((am: string, idx: number) => {
-                            const isMatched = lead.must_have_amenities.includes(am);
-                            return (
-                              <span 
-                                key={idx}
-                                className={`text-sm font-semibold py-1.5 px-3 rounded-lg border ${
-                                  isMatched 
-                                    ? 'bg-primary/5 border-primary/20 text-primary ring-1 ring-primary/10' 
-                                    : 'bg-background border-border-custom text-foreground/60'
-                                }`}
-                              >
-                                {am} {isMatched && '⭐'}
-                              </span>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Realtor Insider Notes */}
-                      {comm.realtor_notes && (
-                        <div className="bg-primary/5 border border-primary/20 rounded-xl p-4.5 space-y-2">
-                          <span className="block text-xs font-extrabold text-primary uppercase tracking-wider flex items-center gap-1.5">
-                            <Sparkles className="w-4 h-4 text-primary" />
-                            Insider Notes from {defaultRealtorName}:
-                          </span>
-                          <p className="text-base text-foreground/85 leading-relaxed italic font-serif">
-                            "{comm.realtor_notes}"
-                          </p>
+            {leftTab === 'list' ? (
+              /* Communities Cards */
+              <div className="space-y-8">
+                {matchedCommunities.length === 0 ? (
+                  <div className="bg-card rounded-2xl border border-border-custom p-8 text-center space-y-4 editorial-shadow">
+                    <p className="text-xl font-serif font-bold text-foreground">No direct matches</p>
+                    <p className="text-foreground/70 text-base">We couldn't find exact criteria matches. Ask Walt in the sidebar to review all available inventory.</p>
+                  </div>
+                ) : (
+                  matchedCommunities.map((comm) => (
+                    <motion.div 
+                      key={comm.id}
+                      id={`comm-card-${comm.id}`}
+                      onMouseEnter={() => setHighlightedCommunityId(comm.id)}
+                      onMouseLeave={() => setHighlightedCommunityId(null)}
+                      onClick={() => {
+                        setHighlightedCommunityId(comm.id);
+                      }}
+                      whileHover={{ y: -3 }}
+                      className={`bg-card rounded-2xl border-2 p-0 overflow-hidden relative editorial-shadow hover:shadow-md transition-all duration-300 ${
+                        highlightedCommunityId === comm.id 
+                          ? 'border-primary ring-2 ring-primary/10' 
+                          : 'border-border-custom hover:border-primary/40'
+                      }`}
+                    >
+                      {/* Visual Card Header Banner */}
+                      {comm.image_url && (
+                        <div className="relative w-full aspect-[21/9] sm:aspect-[16/7] overflow-hidden bg-background border-b border-border-custom">
+                          <img 
+                            src={comm.image_url} 
+                            alt={`${comm.name} visual preview`} 
+                            className="w-full h-full object-cover transform hover:scale-103 transition-transform duration-700 ease-out"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                          
+                          {/* Overlay home types */}
+                          <div className="absolute bottom-4 left-4 bg-foreground/80 text-white font-extrabold text-[10px] tracking-wider uppercase py-1.5 px-3 rounded-lg border border-white/10 shadow-xs backdrop-blur-xs">
+                            {comm.home_types[0] || 'Active-Adult'}
+                          </div>
                         </div>
                       )}
 
-                      {/* Card Actions */}
-                      <div className="pt-4 border-t border-border-custom flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <a
-                          href={comm.community_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-primary hover:text-primary-hover text-base font-bold flex items-center gap-1 hover:underline py-2 focus:ring-2 focus:ring-primary/20 rounded"
-                        >
-                          View Listings & Floorplans
-                          <ChevronRight className="w-5 h-5" />
-                        </a>
-
-                        <button
-                          onClick={() => handleAskWaltAboutCommunity(comm.name)}
-                          className="w-full sm:w-auto bg-primary hover:bg-primary-hover text-white font-serif font-bold py-3 px-6 rounded-xl text-base flex items-center justify-center gap-2 transition-colors interactive-target shadow-xs cursor-pointer"
-                        >
-                          <MessageSquare className="w-4 h-4 text-white/80" />
-                          Ask Walt about {comm.name}
-                        </button>
+                      {/* Top match score badge */}
+                      <div className="absolute top-4 right-4 bg-primary text-white font-serif font-bold px-3.5 py-1.5 rounded-lg text-xs uppercase tracking-wider flex items-center gap-1 shadow-md z-10">
+                        <Sparkles className="w-3.5 h-3.5 fill-white/25 text-white" />
+                        <span>{comm.score > 40 ? 'Best Match' : 'Strong Match'}</span>
                       </div>
-                    </div>
-                  </motion.div>
-                ))
-              )}
-            </div>
+
+                      <div className="p-6 sm:p-8 space-y-6">
+                        {/* Community Title */}
+                        <div className="space-y-1">
+                          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-foreground leading-tight">{comm.name}</h2>
+                          <p className="text-base text-foreground/60 flex items-center font-medium">
+                            <MapPin className="w-4.5 h-4.5 mr-1 text-primary/60" />
+                            {comm.region}
+                          </p>
+                        </div>
+
+                        {/* Financial Specs Grid */}
+                        <div className="grid grid-cols-2 gap-4 bg-background p-4 rounded-xl border border-border-custom">
+                          <div>
+                            <span className="block text-[10px] uppercase tracking-wider text-foreground/50 font-extrabold">Price Range</span>
+                            <span className="text-xl sm:text-2xl font-serif font-bold text-foreground">
+                              ${(comm.price_min / 1000).toFixed(0)}k - ${(comm.price_max / 1000).toFixed(0)}k
+                            </span>
+                          </div>
+                          <div>
+                            <span className="block text-[10px] uppercase tracking-wider text-foreground/50 font-extrabold">HOA Inclusions</span>
+                            <span className="text-xl sm:text-2xl font-serif font-bold text-primary">
+                              ${comm.hoa_fee}
+                              <span className="text-sm font-sans font-medium text-foreground/50">/{comm.hoa_frequency === 'monthly' ? 'mo' : comm.hoa_frequency}</span>
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* HOA Coverages */}
+                        <div className="space-y-2">
+                          <span className="block text-xs uppercase tracking-wider font-extrabold text-foreground/45">Included in HOA Fee:</span>
+                          <div className="flex flex-wrap gap-2">
+                            {comm.hoa_inclusions.map((inc: string, idx: number) => (
+                              <span 
+                                key={idx}
+                                className="bg-emerald-50/60 border border-emerald-200/50 text-emerald-800 text-sm font-semibold py-1.5 px-3 rounded-lg flex items-center gap-1.5"
+                              >
+                                <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
+                                {inc}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Amenities Checklist */}
+                        <div className="space-y-2">
+                          <span className="block text-xs uppercase tracking-wider font-extrabold text-foreground/45">Neighborhood Amenities:</span>
+                          <div className="flex flex-wrap gap-2">
+                            {comm.amenities.map((am: string, idx: number) => {
+                              const isMatched = lead.must_have_amenities.includes(am);
+                              return (
+                                <span 
+                                  key={idx}
+                                  className={`text-sm font-semibold py-1.5 px-3 rounded-lg border ${
+                                    isMatched 
+                                      ? 'bg-primary/5 border-primary/20 text-primary ring-1 ring-primary/10' 
+                                      : 'bg-background border-border-custom text-foreground/60'
+                                  }`}
+                                >
+                                  {am} {isMatched && '⭐'}
+                                </span>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Realtor Insider Notes */}
+                        {comm.realtor_notes && (
+                          <div className="bg-primary/5 border border-primary/20 rounded-xl p-4.5 space-y-2">
+                            <span className="block text-xs font-extrabold text-primary uppercase tracking-wider flex items-center gap-1.5">
+                              <Sparkles className="w-4 h-4 text-primary" />
+                              Insider Notes from {defaultRealtorName}:
+                            </span>
+                            <p className="text-base text-foreground/85 leading-relaxed italic font-serif">
+                              "{comm.realtor_notes}"
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Card Actions */}
+                        <div className="pt-4 border-t border-border-custom flex flex-col sm:flex-row items-center justify-between gap-4">
+                          <a
+                            href={comm.community_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-primary hover:text-primary-hover text-base font-bold flex items-center gap-1 hover:underline py-2 focus:ring-2 focus:ring-primary/20 rounded"
+                          >
+                            View Listings & Floorplans
+                            <ChevronRight className="w-5 h-5" />
+                          </a>
+
+                          <button
+                            onClick={() => handleAskWaltAboutCommunity(comm.name)}
+                            className="w-full sm:w-auto bg-primary hover:bg-primary-hover text-white font-serif font-bold py-3 px-6 rounded-xl text-base flex items-center justify-center gap-2 transition-colors interactive-target shadow-xs cursor-pointer"
+                          >
+                            <MessageSquare className="w-4 h-4 text-white/80" />
+                            Ask Walt about {comm.name}
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))
+                )}
+              </div>
+            ) : (
+              /* Map View */
+              <div className="h-[750px] relative">
+                <CommunityMap 
+                  communities={matchedCommunities}
+                  highlightedId={highlightedCommunityId}
+                  onSelectCommunity={(id) => {
+                    setHighlightedCommunityId(id);
+                    setLeftTab('list');
+                    setTimeout(() => {
+                      const cardElement = document.getElementById(`comm-card-${id}`);
+                      if (cardElement) {
+                        cardElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      }
+                    }, 150);
+                  }}
+                />
+              </div>
+            )}
           </div>
 
-          {/* Right Area: AI Sidebar Chat & Interactive Map Tabbed View */}
+          {/* Right Area: AI Sidebar Chat */}
           <div className="lg:col-span-5">
-            <div className="sticky top-24 space-y-4">
-              {/* Tab Selector Button Bar */}
-              <div className="bg-border-custom/40 p-1.5 rounded-2xl flex gap-1.5 border border-border-custom">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('chat')}
-                  className={`flex-1 py-3 px-4 rounded-xl text-base font-bold flex items-center justify-center gap-2 transition-all cursor-pointer interactive-target ${
-                    activeTab === 'chat'
-                      ? 'bg-white text-primary shadow-2xs border border-border-custom'
-                      : 'text-foreground/60 hover:text-foreground hover:bg-white/40'
-                  }`}
-                >
-                  <MessageSquare className="w-5 h-5" />
-                  Chat with Walt
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('map')}
-                  className={`flex-1 py-3 px-4 rounded-xl text-base font-bold flex items-center justify-center gap-2 transition-all cursor-pointer interactive-target ${
-                    activeTab === 'map'
-                      ? 'bg-white text-primary shadow-2xs border border-border-custom'
-                      : 'text-foreground/60 hover:text-foreground hover:bg-white/40'
-                  }`}
-                >
-                  <Map className="w-5 h-5" />
-                  Interactive Map
-                </button>
-              </div>
-
-              {/* Sidebar Content Panel */}
-              <div className="h-[600px] relative">
-                {activeTab === 'chat' ? (
-                  <ChatFeed 
-                    leadId={lead.id} 
-                    realtorName={defaultRealtorName} 
-                    initialQuestion={activeQuestion}
-                  />
-                ) : (
-                  <CommunityMap 
-                    communities={matchedCommunities}
-                    highlightedId={highlightedCommunityId}
-                    onSelectCommunity={(id) => {
-                      setHighlightedCommunityId(id);
-                      const comm = matchedCommunities.find(c => c.id === id);
-                      if (comm) {
-                        handleAskWaltAboutCommunity(comm.name);
-                      }
-                    }}
-                  />
-                )}
+            <div className="sticky top-24">
+              <div className="h-[750px] relative">
+                <ChatFeed 
+                  leadId={lead.id} 
+                  realtorName={defaultRealtorName} 
+                  initialQuestion={activeQuestion}
+                  lead={lead}
+                  communities={communities}
+                />
               </div>
             </div>
           </div>

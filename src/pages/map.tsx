@@ -5,7 +5,10 @@ import Link from 'next/link';
 import { 
   Building,
   Phone,
-  ArrowLeft
+  ArrowLeft,
+  Search,
+  Loader2,
+  MapPin
 } from 'lucide-react';
 import { getTenantSubdomain, fetchRealtorBySubdomain, fetchCommunitiesByRealtor, Realtor, Community } from '../utils/tenant';
 import { DEFAULT_REALTOR } from '../utils/supabaseClient';
@@ -30,6 +33,58 @@ export default function MapPage() {
 
   // Registration Access State
   const [isRegistered, setIsRegistered] = useState(false);
+
+  // Search States
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchCenter, setSearchCenter] = useState<[number, number] | null>(null);
+  const [searchZoom, setSearchZoom] = useState<number | undefined>(undefined);
+  const [searchError, setSearchError] = useState('');
+  const [searchLoading, setSearchLoading] = useState(false);
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+    setSearchLoading(true);
+    setSearchError('');
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1`);
+      const data = await response.json();
+      if (data && data.length > 0) {
+        const lat = parseFloat(data[0].lat);
+        const lon = parseFloat(data[0].lon);
+        setSearchCenter([lat, lon]);
+        setSearchZoom(12);
+      } else {
+        // Fallback local search
+        const lowerQuery = searchQuery.toLowerCase();
+        const foundLocal = communities.find(c => 
+          c.region.toLowerCase().includes(lowerQuery) || 
+          c.name.toLowerCase().includes(lowerQuery)
+        );
+        if (foundLocal && foundLocal.latitude && foundLocal.longitude) {
+          setSearchCenter([foundLocal.latitude, foundLocal.longitude]);
+          setSearchZoom(12);
+        } else {
+          setSearchError('Location not found. Try entering a city and state (e.g. York, PA).');
+        }
+      }
+    } catch (err) {
+      // Fallback local search
+      const lowerQuery = searchQuery.toLowerCase();
+      const foundLocal = communities.find(c => 
+        c.region.toLowerCase().includes(lowerQuery) || 
+        c.name.toLowerCase().includes(lowerQuery)
+      );
+      if (foundLocal && foundLocal.latitude && foundLocal.longitude) {
+        setSearchCenter([foundLocal.latitude, foundLocal.longitude]);
+        setSearchZoom(12);
+      } else {
+        setSearchError('Search failed. Please try again.');
+      }
+    } finally {
+      setSearchLoading(false);
+    }
+  };
 
   useEffect(() => {
     async function loadTenant() {
@@ -100,7 +155,7 @@ export default function MapPage() {
     );
   }
 
-  const tenantParam = subdomain !== 'york' ? `?tenant=${subdomain}` : '';
+  const tenantParam = subdomain !== 'york' ? `?id=${subdomain}` : '';
   const surveyUrl = `/${tenantParam}`;
 
   return (
@@ -161,8 +216,38 @@ export default function MapPage() {
         </header>
 
         {/* Map Container - fills the viewport height */}
-        <main className="flex-1 w-full p-4 md:p-6 bg-slate-50 relative">
-          <div className="w-full h-[calc(100vh-120px)] sm:h-[calc(100vh-100px)] rounded-2xl overflow-hidden shadow-sm border border-border-custom bg-white">
+        <main className="flex-1 w-full p-4 md:p-6 bg-slate-50 relative flex flex-col space-y-4">
+          {/* Geocoding Search Bar */}
+          <div className="w-full max-w-xl mx-auto">
+            <form onSubmit={handleSearch} className="flex gap-2 bg-white p-2 rounded-xl border-2 border-border-custom focus-within:border-primary transition-all shadow-2xs">
+              <div className="flex-1 flex items-center px-2">
+                <Search className="w-5 h-5 text-foreground/45 mr-2" />
+                <input
+                  type="text"
+                  placeholder="Zoom to city & state... (e.g. York, PA)"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full text-base focus:outline-none bg-transparent"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={searchLoading}
+                className="bg-primary hover:bg-primary-hover disabled:bg-primary/50 text-white font-serif font-bold py-2 px-5 rounded-lg text-sm flex items-center justify-center transition-colors cursor-pointer"
+              >
+                {searchLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  'Search'
+                )}
+              </button>
+            </form>
+            {searchError && (
+              <p className="text-red-600 text-xs mt-1.5 px-3 font-semibold">{searchError}</p>
+            )}
+          </div>
+
+          <div className="w-full h-[calc(100vh-190px)] sm:h-[calc(100vh-170px)] rounded-2xl overflow-hidden shadow-sm border border-border-custom bg-white">
             {communities.length > 0 ? (
               <CommunityMap 
                 communities={communities} 
@@ -172,9 +257,11 @@ export default function MapPage() {
                   if (typeof window !== 'undefined') {
                     sessionStorage.setItem('pending_community_redirect', url);
                   }
-                  const tenantParam = subdomain !== 'york' ? `?tenant=${subdomain}` : '';
+                  const tenantParam = subdomain !== 'york' ? `?id=${subdomain}` : '';
                   router.push(`/${tenantParam}`);
                 }}
+                searchCenter={searchCenter}
+                searchZoom={searchZoom}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
