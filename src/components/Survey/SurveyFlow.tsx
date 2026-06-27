@@ -267,30 +267,35 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
             }}
             className="w-full"
           >
-            {/* Step 1: Destination & Identity Mapping (Timeline) */}
+            {/* Step 1: Structural Property Selection */}
             {step === 1 && (
               <div>
-                <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-8 leading-tight tracking-tight text-center">
-                  Which Best Describes You?
+                <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-8 leading-tight tracking-tight">
+                  Which Style Of Home Fits Your Lifestyle Best?
                 </h2>
 
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 gap-4">
                   <motion.button
                     type="button"
                     whileHover={{ y: -2, borderColor: '#9A7F56' }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => {
-                      setMovingTimeline('Moving Soon (0-3 Months)');
+                      setPreferredStyle('Single-Family Detached');
                       handleNextStep();
                     }}
-                    className="w-full text-left bg-white border-2 border-border-custom p-6 rounded-xl flex items-center justify-between interactive-target group shadow-2xs cursor-pointer"
+                    className={`w-full text-left p-5 rounded-xl border-2 flex items-center justify-between interactive-target group shadow-2xs cursor-pointer ${
+                      preferredStyle === 'Single-Family Detached' 
+                        ? 'border-primary bg-primary/5' 
+                        : 'border-border-custom bg-white'
+                    }`}
                   >
                     <div className="flex items-center">
-                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4 group-hover:bg-primary/10 transition-colors">
-                        <Calendar className="w-6 h-6" />
+                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4">
+                        <Home className="w-6 h-6" />
                       </div>
                       <div>
-                        <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">Moving Soon (0-3 Months)</span>
+                        <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">Single-Family Detached</span>
+                        <span className="block text-sm sm:text-base text-foreground/50 mt-0.5">Standalone home with maximum privacy</span>
                       </div>
                     </div>
                     <ArrowRight className="w-5 h-5 text-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all" />
@@ -301,17 +306,22 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
                     whileHover={{ y: -2, borderColor: '#9A7F56' }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => {
-                      setMovingTimeline('Moving in 3-12 Months');
+                      setPreferredStyle('Low-Maintenance Townhome / Villa');
                       handleNextStep();
                     }}
-                    className="w-full text-left bg-white border-2 border-border-custom p-6 rounded-xl flex items-center justify-between interactive-target group shadow-2xs cursor-pointer"
+                    className={`w-full text-left p-5 rounded-xl border-2 flex items-center justify-between interactive-target group shadow-2xs cursor-pointer ${
+                      preferredStyle === 'Low-Maintenance Townhome / Villa' 
+                        ? 'border-primary bg-primary/5' 
+                        : 'border-border-custom bg-white'
+                    }`}
                   >
                     <div className="flex items-center">
-                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4 group-hover:bg-primary/10 transition-colors">
-                        <Calendar className="w-6 h-6" />
+                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4">
+                        <Building2 className="w-6 h-6" />
                       </div>
                       <div>
-                        <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">Moving in 3-12 Months</span>
+                        <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">Townhome / Villa Layout</span>
+                        <span className="block text-sm sm:text-base text-foreground/50 mt-0.5">Attached layout with external maintenance included</span>
                       </div>
                     </div>
                     <ArrowRight className="w-5 h-5 text-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all" />
@@ -322,17 +332,22 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
                     whileHover={{ y: -2, borderColor: '#9A7F56' }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => {
-                      setMovingTimeline('Just Exploring Options');
+                      setPreferredStyle('Condo / Penthouse Layout');
                       handleNextStep();
                     }}
-                    className="w-full text-left bg-white border-2 border-border-custom p-6 rounded-xl flex items-center justify-between interactive-target group shadow-2xs cursor-pointer"
+                    className={`w-full text-left p-5 rounded-xl border-2 flex items-center justify-between interactive-target group shadow-2xs cursor-pointer ${
+                      preferredStyle === 'Condo / Penthouse Layout' 
+                        ? 'border-primary bg-primary/5' 
+                        : 'border-border-custom bg-white'
+                    }`}
                   >
                     <div className="flex items-center">
-                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4 group-hover:bg-primary/10 transition-colors">
-                        <Calendar className="w-6 h-6" />
+                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4">
+                        <Building className="w-6 h-6" />
                       </div>
                       <div>
-                        <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">Just Exploring Options</span>
+                        <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">Condo / Penthouse Layout</span>
+                        <span className="block text-sm sm:text-base text-foreground/50 mt-0.5">Single-floor convenience and lock-and-go security</span>
                       </div>
                     </div>
                     <ArrowRight className="w-5 h-5 text-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all" />
@@ -565,35 +580,30 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
               </div>
             )}
 
-            {/* Step 3: Structural Property Selection */}
+            {/* Step 3: Destination & Identity Mapping (Timeline) */}
             {step === 3 && (
               <div>
-                <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-8 leading-tight tracking-tight">
-                  Which Style Of Home Fits Your Lifestyle Best?
+                <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-8 leading-tight tracking-tight text-center">
+                  Which Best Describes You?
                 </h2>
 
-                <div className="grid grid-cols-1 gap-4">
+                <div className="space-y-4">
                   <motion.button
                     type="button"
                     whileHover={{ y: -2, borderColor: '#9A7F56' }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => {
-                      setPreferredStyle('Single-Family Detached');
+                      setMovingTimeline('Moving Soon (0-3 Months)');
                       handleNextStep();
                     }}
-                    className={`w-full text-left p-5 rounded-xl border-2 flex items-center justify-between interactive-target group shadow-2xs cursor-pointer ${
-                      preferredStyle === 'Single-Family Detached' 
-                        ? 'border-primary bg-primary/5' 
-                        : 'border-border-custom bg-white'
-                    }`}
+                    className="w-full text-left bg-white border-2 border-border-custom p-6 rounded-xl flex items-center justify-between interactive-target group shadow-2xs cursor-pointer"
                   >
                     <div className="flex items-center">
-                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4">
-                        <Home className="w-6 h-6" />
+                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4 group-hover:bg-primary/10 transition-colors">
+                        <Calendar className="w-6 h-6" />
                       </div>
                       <div>
-                        <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">Single-Family Detached</span>
-                        <span className="block text-sm sm:text-base text-foreground/50 mt-0.5">Standalone home with maximum privacy</span>
+                        <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">Moving Soon (0-3 Months)</span>
                       </div>
                     </div>
                     <ArrowRight className="w-5 h-5 text-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all" />
@@ -604,22 +614,17 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
                     whileHover={{ y: -2, borderColor: '#9A7F56' }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => {
-                      setPreferredStyle('Low-Maintenance Townhome / Villa');
+                      setMovingTimeline('Moving in 3-12 Months');
                       handleNextStep();
                     }}
-                    className={`w-full text-left p-5 rounded-xl border-2 flex items-center justify-between interactive-target group shadow-2xs cursor-pointer ${
-                      preferredStyle === 'Low-Maintenance Townhome / Villa' 
-                        ? 'border-primary bg-primary/5' 
-                        : 'border-border-custom bg-white'
-                    }`}
+                    className="w-full text-left bg-white border-2 border-border-custom p-6 rounded-xl flex items-center justify-between interactive-target group shadow-2xs cursor-pointer"
                   >
                     <div className="flex items-center">
-                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4">
-                        <Building2 className="w-6 h-6" />
+                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4 group-hover:bg-primary/10 transition-colors">
+                        <Calendar className="w-6 h-6" />
                       </div>
                       <div>
-                        <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">Townhome / Villa Layout</span>
-                        <span className="block text-sm sm:text-base text-foreground/50 mt-0.5">Attached layout with external maintenance included</span>
+                        <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">Moving in 3-12 Months</span>
                       </div>
                     </div>
                     <ArrowRight className="w-5 h-5 text-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all" />
@@ -630,22 +635,17 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
                     whileHover={{ y: -2, borderColor: '#9A7F56' }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => {
-                      setPreferredStyle('Condo / Penthouse Layout');
+                      setMovingTimeline('Just Exploring Options');
                       handleNextStep();
                     }}
-                    className={`w-full text-left p-5 rounded-xl border-2 flex items-center justify-between interactive-target group shadow-2xs cursor-pointer ${
-                      preferredStyle === 'Condo / Penthouse Layout' 
-                        ? 'border-primary bg-primary/5' 
-                        : 'border-border-custom bg-white'
-                    }`}
+                    className="w-full text-left bg-white border-2 border-border-custom p-6 rounded-xl flex items-center justify-between interactive-target group shadow-2xs cursor-pointer"
                   >
                     <div className="flex items-center">
-                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4">
-                        <Building className="w-6 h-6" />
+                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4 group-hover:bg-primary/10 transition-colors">
+                        <Calendar className="w-6 h-6" />
                       </div>
                       <div>
-                        <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">Condo / Penthouse Layout</span>
-                        <span className="block text-sm sm:text-base text-foreground/50 mt-0.5">Single-floor convenience and lock-and-go security</span>
+                        <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">Just Exploring Options</span>
                       </div>
                     </div>
                     <ArrowRight className="w-5 h-5 text-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all" />
