@@ -120,9 +120,9 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
     onStepChange?.(step);
   }, [step, onStepChange]);
 
-  // Auto-submit step 7 when all required parameters exist
+  // Auto-submit step 6 when all required parameters exist
   useEffect(() => {
-    if (step === 7 && name.trim() && email.trim() && phone.trim() && !loading) {
+    if (step === 6 && name.trim() && email.trim() && phone.trim() && !loading) {
       const dummyEvent = { preventDefault: () => {} } as React.FormEvent;
       handleSubmit(dummyEvent);
     }
@@ -227,7 +227,7 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
   };
 
   // Progress Bar percentage
-  const progressPercent = ((step - 1) / 6) * 100;
+  const progressPercent = ((step - 1) / 5) * 100;
 
   return (
     <div className="w-full max-w-2xl mx-auto bg-card rounded-2xl editorial-shadow border border-border-custom overflow-hidden">
@@ -699,94 +699,8 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
               </div>
             )}
 
-            {/* Step 6: Current Residence Situation */}
+            {/* Step 6: Secure Value-Add Contact Capture */}
             {step === 6 && (
-              <div>
-                <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-8 leading-tight tracking-tight text-center">
-                  Do You Currently Live In The {regionName} Area?
-                </h2>
-
-                <div className="grid grid-cols-1 gap-4">
-                  <motion.button
-                    type="button"
-                    whileHover={{ y: -2, borderColor: '#9A7F56' }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => {
-                      setCurrentResidence('Yes, I Own A Home Here');
-                      handleNextStep();
-                    }}
-                    className={`w-full text-left p-6 rounded-xl border-2 flex items-center justify-between interactive-target group shadow-2xs cursor-pointer ${
-                      currentResidence === 'Yes, I Own A Home Here' 
-                        ? 'border-primary bg-primary/5' 
-                        : 'border-border-custom bg-white'
-                    }`}
-                  >
-                    <div className="flex items-center">
-                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4">
-                        <Home className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <span className="block text-xl font-serif font-bold text-foreground">Yes, I Own A Home Here</span>
-                      </div>
-                    </div>
-                    <ArrowRight className="w-5 h-5 text-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all" />
-                  </motion.button>
-
-                  <motion.button
-                    type="button"
-                    whileHover={{ y: -2, borderColor: '#9A7F56' }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => {
-                      setCurrentResidence('Yes, I Rent Here');
-                      handleNextStep();
-                    }}
-                    className={`w-full text-left p-6 rounded-xl border-2 flex items-center justify-between interactive-target group shadow-2xs cursor-pointer ${
-                      currentResidence === 'Yes, I Rent Here' 
-                        ? 'border-primary bg-primary/5' 
-                        : 'border-border-custom bg-white'
-                    }`}
-                  >
-                    <div className="flex items-center">
-                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4">
-                        <Building className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <span className="block text-xl font-serif font-bold text-foreground">Yes, I Rent Here</span>
-                      </div>
-                    </div>
-                    <ArrowRight className="w-5 h-5 text-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all" />
-                  </motion.button>
-
-                  <motion.button
-                    type="button"
-                    whileHover={{ y: -2, borderColor: '#9A7F56' }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => {
-                      setCurrentResidence('No, I Might Be Moving From Somewhere Else');
-                      handleNextStep();
-                    }}
-                    className={`w-full text-left p-6 rounded-xl border-2 flex items-center justify-between interactive-target group shadow-2xs cursor-pointer ${
-                      currentResidence === 'No, I Might Be Moving From Somewhere Else' 
-                        ? 'border-primary bg-primary/5' 
-                        : 'border-border-custom bg-white'
-                    }`}
-                  >
-                    <div className="flex items-center">
-                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4">
-                        <Compass className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <span className="block text-xl font-serif font-bold text-foreground">No, I Might Be Moving From Somewhere Else</span>
-                      </div>
-                    </div>
-                    <ArrowRight className="w-5 h-5 text-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all" />
-                  </motion.button>
-                </div>
-              </div>
-            )}
-
-            {/* Step 7: Secure Value-Add Contact Capture */}
-            {step === 7 && (
               <div>
                 <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-4 leading-tight tracking-tight text-center">
                   Create FREE Account & See Your Recommended Communities
