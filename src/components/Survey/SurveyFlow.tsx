@@ -267,8 +267,8 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
             }}
             className="w-full"
           >
-            {/* Step 1: Structural Property Selection */}
-            {step === 1 && (
+            {/* Step 2: Structural Property Selection */}
+            {step === 2 && (
               <div>
                 <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-8 leading-tight tracking-tight">
                   Which Style Of Home Fits Your Lifestyle Best?
@@ -356,8 +356,8 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
               </div>
             )}
 
-            {/* Step 2: Must-Have Amenities */}
-            {step === 2 && (
+            {/* Step 1: Must-Have Amenities */}
+            {step === 1 && (
               <div>
                 <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-1 leading-tight tracking-tight text-center">
                   Select 3 Amenities Most Important to You
@@ -584,7 +584,7 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
             {step === 3 && (
               <div>
                 <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-8 leading-tight tracking-tight text-center">
-                  Which Best Describes You?
+                  What's Your Time Line For A Move
                 </h2>
 
                 <div className="space-y-4">
