@@ -120,9 +120,9 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
     onStepChange?.(step);
   }, [step, onStepChange]);
 
-  // Auto-submit step 6 when all required parameters exist
+  // Auto-submit step 7 when all required parameters exist
   useEffect(() => {
-    if (step === 6 && name.trim() && email.trim() && phone.trim() && !loading) {
+    if (step === 7 && name.trim() && email.trim() && phone.trim() && !loading) {
       const dummyEvent = { preventDefault: () => {} } as React.FormEvent;
       handleSubmit(dummyEvent);
     }
@@ -227,7 +227,7 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
   };
 
   // Progress Bar percentage
-  const progressPercent = ((step - 1) / 5) * 100;
+  const progressPercent = ((step - 1) / 6) * 100;
 
   return (
     <div className="w-full max-w-2xl mx-auto bg-card rounded-2xl editorial-shadow border border-border-custom overflow-hidden">
@@ -588,8 +588,45 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
               </div>
             )}
 
-            {/* Step 4: Destination & Identity Mapping (Timeline) */}
+            {/* Step 4: Budget / Price Range Question */}
             {step === 4 && (
+              <div>
+                <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-8 leading-tight tracking-tight text-center">
+                  Your Price Range?
+                </h2>
+
+                <div className="grid grid-cols-1 gap-4">
+                  {[
+                    { label: '0-$200,000', min: 0, max: 200000 },
+                    { label: '$200-$500,000', min: 200000, max: 500000 },
+                    { label: '$500,000+', min: 500000, max: null }
+                  ].map((opt) => (
+                    <motion.button
+                      key={opt.label}
+                      type="button"
+                      whileHover={{ y: -2, borderColor: '#9A7F56' }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        setBudgetMin(opt.min);
+                        setBudgetMax(opt.max);
+                        handleNextStep();
+                      }}
+                      className={`w-full text-left p-6 rounded-xl border-2 flex items-center justify-between interactive-target group shadow-2xs cursor-pointer ${
+                        budgetMin === opt.min && budgetMax === opt.max
+                          ? 'border-primary bg-primary/5' 
+                          : 'border-border-custom bg-white'
+                      }`}
+                    >
+                      <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">{opt.label}</span>
+                      <ArrowRight className="w-5 h-5 text-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Step 5: Destination & Identity Mapping (Timeline) */}
+            {step === 5 && (
               <div>
                 <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-8 leading-tight tracking-tight text-center">
                   What's Your Time Line For A Move
@@ -662,8 +699,8 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
               </div>
             )}
 
-            {/* Step 5: Current Residence Situation */}
-            {step === 5 && (
+            {/* Step 6: Current Residence Situation */}
+            {step === 6 && (
               <div>
                 <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-8 leading-tight tracking-tight text-center">
                   Do You Currently Live In The {regionName} Area?
@@ -748,8 +785,8 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
               </div>
             )}
 
-            {/* Step 6: Secure Value-Add Contact Capture */}
-            {step === 6 && (
+            {/* Step 7: Secure Value-Add Contact Capture */}
+            {step === 7 && (
               <div>
                 <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-4 leading-tight tracking-tight text-center">
                   Create FREE Account & See Your Recommended Communities
