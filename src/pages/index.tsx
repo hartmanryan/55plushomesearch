@@ -25,15 +25,11 @@ const BackgroundMapLazy = dynamic(() => import('../components/Map/BackgroundMap'
 
 export default function Home() {
   const router = useRouter();
-  const surveyRef = useRef<HTMLDivElement>(null);
   const [realtor, setRealtor] = useState<Realtor | null>(null);
   const [communities, setCommunities] = useState<Community[]>([]);
   const [loading, setLoading] = useState(true);
   const [subdomain, setSubdomain] = useState('york');
   const [regionName, setRegionName] = useState('York County');
-  const [showAllComms, setShowAllComms] = useState(false);
-  const [pulseTrigger, setPulseTrigger] = useState(0);
-  const [surveyStarted, setSurveyStarted] = useState(false);
 
   useEffect(() => {
     async function loadTenant() {
@@ -73,8 +69,11 @@ export default function Home() {
   }, [router.isReady, router.query.area, subdomain, realtor]);
 
   const handleLockClick = (commName: string) => {
-    surveyRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    setPulseTrigger(prev => prev + 1);
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('pending_community_redirect', `/portal?leadId=pending`);
+    }
+    const tenantParam = subdomain !== 'york' ? `?id=${subdomain}` : '';
+    router.push(`/register${tenantParam}`);
   };
 
   if (loading) {
@@ -165,39 +164,30 @@ export default function Home() {
         </header>
 
         <main className="flex-1 max-w-3xl w-full mx-auto px-6 py-12 lg:py-16 flex flex-col items-center justify-center text-center space-y-10 relative z-10">
-          <div className="glass-panel py-6 px-8 sm:py-8 sm:px-12 rounded-2xl border border-border-custom/50 shadow-sm w-full max-w-2xl mx-auto">
+          <div className="glass-panel py-8 px-8 sm:py-12 sm:px-12 rounded-2xl border border-border-custom shadow-md w-full max-w-2xl mx-auto space-y-6">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-black text-foreground tracking-tight leading-tight">
               Find your perfect 55+ lifestyle in <span className="text-primary underline decoration-primary/30 decoration-wavy underline-offset-8">{regionName}</span>
             </h1>
-          </div>
 
-          <motion.div 
-            ref={surveyRef}
-            className="w-full rounded-2xl border-2 border-transparent transition-all duration-300"
-            animate={pulseTrigger > 0 ? {
-              scale: [1, 1.03, 1],
-              borderColor: ['rgba(154, 127, 86, 0)', 'rgba(154, 127, 86, 0.4)', 'rgba(154, 127, 86, 0)']
-            } : {}}
-            transition={{ duration: 0.6, ease: 'easeInOut' }}
-          >
-            <SurveyFlow realtor={realtor} onStepChange={(step) => setSurveyStarted(step > 1)} />
-          </motion.div>
+            <div className="pt-4">
+              <Link
+                href={`/register${subdomain !== 'york' ? `?id=${subdomain}` : ''}`}
+                className="inline-flex items-center gap-2 bg-primary hover:bg-primary-hover text-white font-serif font-bold text-lg py-4 px-8 rounded-xl shadow-md transition-all scale-100 hover:scale-102 cursor-pointer focus:ring-4 focus:ring-primary/20"
+              >
+                <Sparkles className="w-5 h-5" />
+                <span>Try Our Community Matching Wizard</span>
+              </Link>
+            </div>
+          </div>
         </main>
 
         {/* Preview Catalog Section */}
-        {communities.length > 0 && !surveyStarted && (
+        {communities.length > 0 && (
           <section className="max-w-7xl w-full mx-auto px-6 py-16 border-t border-border-custom/50 relative z-10 space-y-12">
-            <div className="text-center space-y-4 max-w-2xl mx-auto">
-              <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground tracking-tight">
-                Preview Local 55+ Communities
-              </h2>
-              <p className="text-base sm:text-lg text-foreground/70 font-light">
-                Browse active-adult neighborhoods curated by {realtor.name} in the {regionName} area. Complete the survey to unlock full maps, listing inventory, and expert advisor insights.
-              </p>
-            </div>
+
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {(showAllComms ? communities : communities.slice(0, 6)).map((comm) => (
+              {communities.map((comm) => (
                 <div 
                   key={comm.id}
                   className="bg-card border border-border-custom rounded-2xl overflow-hidden relative editorial-shadow flex flex-col group hover:border-primary/40 hover:shadow-md transition-all duration-300"
@@ -269,18 +259,6 @@ export default function Home() {
                 </div>
               ))}
             </div>
-
-            {communities.length > 6 && (
-              <div className="flex justify-center pt-4">
-                <button
-                  onClick={() => setShowAllComms(!showAllComms)}
-                  className="bg-white border-2 border-border-custom hover:border-primary/45 text-foreground/80 hover:text-primary font-serif font-extrabold py-3.5 px-8 rounded-xl text-base flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer focus:ring-4 focus:ring-primary/20"
-                >
-                  <span>{showAllComms ? 'Show Less Communities' : `Show All ${communities.length} Communities`}</span>
-                  {showAllComms ? <ChevronDown className="w-5 h-5 rotate-180 transition-transform duration-300" /> : <ChevronDown className="w-5 h-5 transition-transform duration-300" />}
-                </button>
-              </div>
-            )}
           </section>
         )}
 

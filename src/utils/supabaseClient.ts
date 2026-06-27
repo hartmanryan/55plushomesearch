@@ -37,7 +37,6 @@ const TAMPA_REALTOR = {
 };
 
 const DEFAULT_COMMUNITIES = [
-
   {
     "id": "c-seed-alden-place",
     "realtor_id": "d8c7b80a-9d6e-4c3e-902e-8cb5d6e2e5c8",
@@ -66,7 +65,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Alden Place offers a peaceful environment for downsizers. Grounds are kept in top-tier shape year-round. Walt's tip: Homes here feature very well-designed single-story layouts.",
     "community_url": "https://www.retiretopa.com/alden-place/",
-    "image_url": "/modern_ranch_home.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1778634923/42/42_PALN2024956_01.jpg",
     "latitude": 40.3411,
     "longitude": -76.428,
     "created_at": "2026-05-30T12:56:41.876Z"
@@ -130,7 +129,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Bloomfields offers a peaceful environment for downsizers. Grounds are kept in top-tier shape year-round. Walt's tip: Homes here feature very well-designed single-story layouts.",
     "community_url": "https://www.retiretopa.com/bloomfields/",
-    "image_url": "/traditions_york_exterior.png",
+    "image_url": "https://sierra-public.azureedge.net/e79ae834-1e54-4fab-b4cd-f3d1ea3c66ea.jpg",
     "latitude": 39.9644,
     "longitude": -76.7261,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -164,7 +163,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Brookshire is a fantastic 55+ neighborhood in the Lancaster County area. Offering beautiful homes and highly quiet environments. Walt's tip: Perfect for buyers wanting peaceful surroundings.",
     "community_url": "https://www.retiretopa.com/brookshire-lancaster/",
-    "image_url": "/luxury_clubhouse.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1782311306/42/42_PALA2089294_01.jpg",
     "latitude": 40.0495,
     "longitude": -76.3476,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -224,7 +223,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Cherry Tree is a lovely 55+ neighborhood in Hanover, PA. Features ranch-style homes and single-floor living. Walt's tip: The community is close to local shopping centers, supermarkets, and dining options, making everyday errands incredibly easy.",
     "community_url": "https://www.retiretopa.com/cherry-tree-hanover/",
-    "image_url": "/traditions_york_exterior.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1781763424/42/42_PAYK2101888_01.jpg",
     "latitude": 39.795,
     "longitude": -76.975,
     "realtor_id": "d8c7b80a-9d6e-4c3e-902e-8cb5d6e2e5c8",
@@ -259,7 +258,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Clearview Gardens North features modern low-maintenance floorplans. Residents love the convenient access to local retail and dining. Walt's tip: Great community if you travel frequently since exterior upkeep is fully covered!",
     "community_url": "https://www.retiretopa.com/clearview-gardens-north/",
-    "image_url": "/modern_ranch_home.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1781183529/42/42_PALA2089324_01.jpg",
     "latitude": 39.8016,
     "longitude": -76.9811,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -292,7 +291,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Cortland Park is a charming, highly established active-adult community. The social committee organizes fantastic dinners and get-togethers. Walt's tip: Be sure to tour the clubhouse and meet the neighbors.",
     "community_url": "https://www.retiretopa.com/cortland-park-winding-hills/",
-    "image_url": "/springwood_estates_villa.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1779887851/42/42_PACB2054390_01.jpg",
     "latitude": 40.229,
     "longitude": -77.0308,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -323,7 +322,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Country Manor is a charming, highly established active-adult community. The social committee organizes fantastic dinners and get-togethers. Walt's tip: Be sure to tour the clubhouse and meet the neighbors.",
     "community_url": "https://www.retiretopa.com/country-manor/",
-    "image_url": "/luxury_clubhouse.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1781923024/42/42_PACB2050102_01.jpg",
     "latitude": 39.8492,
     "longitude": -77.5049,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -354,7 +353,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Cumberland Village - offers a peaceful environment for downsizers. Grounds are kept in top-tier shape year-round. Walt's tip: Homes here feature very well-designed single-story layouts.",
     "community_url": "https://www.retiretopa.com/cumberland-village-gettysburg/",
-    "image_url": "/modern_ranch_home.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1777494303/42/42_PAAD2022280_01.jpg",
     "latitude": 39.8136,
     "longitude": -77.2773,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -384,7 +383,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Deatrick Village is a charming, highly established active-adult community. The social committee organizes fantastic dinners and get-togethers. Walt's tip: Be sure to tour the clubhouse and meet the neighbors.",
     "community_url": "https://www.retiretopa.com/deatrick-village-gettysburg/",
-    "image_url": "/luxury_clubhouse.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1779111849/42/42_PAAD2023124_01.jpg",
     "latitude": 39.8227,
     "longitude": -77.2111,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -446,7 +445,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Four Seasons @ Elmtree is a charming, highly established active-adult community. The social committee organizes fantastic dinners and get-togethers. Walt's tip: Be sure to tour the clubhouse and meet the neighbors.",
     "community_url": "https://www.retiretopa.com/four-seasons-elmtree/",
-    "image_url": "/luxury_clubhouse.png",
+    "image_url": "https://sierra-public.azureedge.net/85b696a1-86f2-45b1-aaa1-12b2f90e2294.jpg",
     "latitude": 40.003,
     "longitude": -76.2761,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -477,7 +476,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Heritage features modern low-maintenance floorplans. Residents love the convenient access to local retail and dining. Walt's tip: Great community if you travel frequently since exterior upkeep is fully covered!",
     "community_url": "https://www.retiretopa.com/heritage-strasburg/",
-    "image_url": "/pines_heritage_condo.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1781934140/42/42_PALA2085012_01.jpg",
     "latitude": 39.9593,
     "longitude": -76.3353,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -512,7 +511,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "HILLVIEW offers a peaceful environment for downsizers. Grounds are kept in top-tier shape year-round. Walt's tip: Homes here feature very well-designed single-story layouts.",
     "community_url": "https://www.retiretopa.com/hillview/",
-    "image_url": "/luxury_clubhouse.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1780841823/42/42_PACT2126270_01.jpg",
     "latitude": 39.9576,
     "longitude": -76.7495,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -543,7 +542,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Home Towne Square is a charming, highly established active-adult community. The social committee organizes fantastic dinners and get-togethers. Walt's tip: Be sure to tour the clubhouse and meet the neighbors.",
     "community_url": "https://www.retiretopa.com/home-towne-square-ephrata/",
-    "image_url": "/modern_ranch_home.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1782307781/42/42_PALA2090730_01.jpg",
     "latitude": 39.9765,
     "longitude": -76.3944,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -576,7 +575,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Honeycroft Village is a charming, highly established active-adult community. The social committee organizes fantastic dinners and get-togethers. Walt's tip: Be sure to tour the clubhouse and meet the neighbors.",
     "community_url": "https://www.retiretopa.com/honeycroft-village/",
-    "image_url": "/luxury_clubhouse.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1782566568/42/42_PACT2129104_01.jpg",
     "latitude": 39.9671,
     "longitude": -76.706,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -607,7 +606,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Jackson Heights is a gorgeous active adult community in York, PA. Known for its convenient location and excellent quality construction, it offers single-floor ranch-style living. Walt's tip: Residents love the tight-knit social vibe here.",
     "community_url": "https://www.retiretopa.com/jackson-heights-york/",
-    "image_url": "/traditions_york_exterior.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1779285924/42/42_PAYK2101704_01.jpg",
     "latitude": 39.988,
     "longitude": -76.715,
     "realtor_id": "d8c7b80a-9d6e-4c3e-902e-8cb5d6e2e5c8",
@@ -639,7 +638,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Lake Heritage offers a peaceful environment for downsizers. Grounds are kept in top-tier shape year-round. Walt's tip: Homes here feature very well-designed single-story layouts.",
     "community_url": "https://www.retiretopa.com/lake-heritage/",
-    "image_url": "/pines_heritage_condo.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1782463169/42/42_PAAD2024344_01.jpg",
     "latitude": 39.8573,
     "longitude": -77.2177,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -672,7 +671,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Lake Meade Berlin is a fantastic 55+ neighborhood in the York County area. Offering beautiful homes and highly quiet environments. Walt's tip: Perfect for buyers wanting peaceful surroundings.",
     "community_url": "https://www.retiretopa.com/lake-meade/",
-    "image_url": "/springwood_estates_villa.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1782498057/42/42_PAAD2024230_01.jpg",
     "latitude": 39.9553,
     "longitude": -76.7067,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -705,7 +704,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Lilyfield Berks features modern low-maintenance floorplans. Residents love the convenient access to local retail and dining. Walt's tip: Great community if you travel frequently since exterior upkeep is fully covered!",
     "community_url": "https://www.retiretopa.com/lilyfield-berks/",
-    "image_url": "/traditions_york_exterior.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1776449299/42/42_PABK2069808_01.jpg",
     "latitude": 40.3751,
     "longitude": -76.0287,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -734,7 +733,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Longstown Village is a fantastic option for buyers seeking low-maintenance living in the York area. Known for its quiet streets and friendly neighbors. Walt's tip: Perfect for downsizers who want a cozy but spacious villa.",
     "community_url": "https://www.retiretopa.com/longstown-village-york/",
-    "image_url": "/modern_ranch_home.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1774886528/42/42_PAYK2100266_01.jpg",
     "latitude": 39.957,
     "longitude": -76.657,
     "realtor_id": "d8c7b80a-9d6e-4c3e-902e-8cb5d6e2e5c8",
@@ -768,7 +767,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Meadow View Farms is a fantastic 55+ neighborhood in the York County area. Offering beautiful homes and highly quiet environments. Walt's tip: Perfect for buyers wanting peaceful surroundings.",
     "community_url": "https://www.retiretopa.com/meadow-view-farms/",
-    "image_url": "/luxury_clubhouse.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1773364707/42/42_PABK2069088_01.jpg",
     "latitude": 39.9814,
     "longitude": -76.7338,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -800,7 +799,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "New You Need To Know features modern low-maintenance floorplans. Residents love the convenient access to local retail and dining. Walt's tip: Great community if you travel frequently since exterior upkeep is fully covered!",
     "community_url": "https://www.retiretopa.com/featured-listings/",
-    "image_url": "/traditions_york_exterior.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1782393917/42/42_PAYK2106362_01.jpg",
     "latitude": 39.9389,
     "longitude": -76.7137,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -833,7 +832,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Penn National features modern low-maintenance floorplans. Residents love the convenient access to local retail and dining. Walt's tip: Great community if you travel frequently since exterior upkeep is fully covered!",
     "community_url": "https://www.retiretopa.com/penn-national-fayetteville/",
-    "image_url": "/golf_villa.png",
+    "image_url": "https://sierra-public.azureedge.net/4edae7ff-6948-489b-8429-986a20412144.jpg",
     "latitude": 39.7984,
     "longitude": -77.5446,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -865,7 +864,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Roth Church Farm is a fantastic 55+ neighborhood in the York County area. Offering beautiful homes and highly quiet environments. Walt's tip: Perfect for buyers wanting peaceful surroundings.",
     "community_url": "https://www.retiretopa.com/roth-church-farm/",
-    "image_url": "/springwood_estates_villa.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1780454631/42/42_PAYK2103950_01.jpg",
     "latitude": 39.8656,
     "longitude": -76.8667,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -898,7 +897,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Sinclair Park offers a peaceful environment for downsizers. Grounds are kept in top-tier shape year-round. Walt's tip: Homes here feature very well-designed single-story layouts.",
     "community_url": "https://www.retiretopa.com/sinclair-park/",
-    "image_url": "/traditions_york_exterior.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1782486897/42/42_PACB2054646_01.jpg",
     "latitude": 40.2223,
     "longitude": -77.0108,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -930,7 +929,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Spring Valley Estates offers a peaceful environment for downsizers. Grounds are kept in top-tier shape year-round. Walt's tip: Homes here feature very well-designed single-story layouts.",
     "community_url": "https://www.retiretopa.com/spring-valley-estates-waynesboro/",
-    "image_url": "/modern_ranch_home.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1777471836/42/42_PAFL2033398_01.jpg",
     "latitude": 39.787,
     "longitude": -77.5005,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -963,7 +962,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Stone Hill York is a charming, highly established active-adult community. The social committee organizes fantastic dinners and get-togethers. Walt's tip: Be sure to tour the clubhouse and meet the neighbors.",
     "community_url": "https://www.retiretopa.com/stone/",
-    "image_url": "/luxury_clubhouse.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1778462065/42/42_PAYK2101656_01.jpg",
     "latitude": 39.9452,
     "longitude": -76.7341,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -994,7 +993,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Stonecroft Village offers a peaceful environment for downsizers. Grounds are kept in top-tier shape year-round. Walt's tip: Homes here feature very well-designed single-story layouts.",
     "community_url": "https://www.retiretopa.com/stonecroft-village/",
-    "image_url": "/luxury_clubhouse.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1774759785/42/42_PABK2069800_01.jpg",
     "latitude": 39.9863,
     "longitude": -76.7037,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -1025,7 +1024,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Stoner Farm is a fantastic 55+ neighborhood in the Adams County area. Offering beautiful homes and highly quiet environments. Walt's tip: Perfect for buyers wanting peaceful surroundings.",
     "community_url": "https://www.retiretopa.com/stoner-farm-littlestown/",
-    "image_url": "/modern_ranch_home.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1779562075/42/42_PAAD2022092_01.jpg",
     "latitude": 39.8696,
     "longitude": -77.1892,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -1057,7 +1056,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "The Links at Gettysburg is an award-winning active-adult golf course community. Offers stunning scenic views and luxury amenities. Walt's tip: If you want championship golf at your doorstep and gorgeous sunset views over the greens, look no further.",
     "community_url": "https://www.retiretopa.com/the-links-gettysburg/",
-    "image_url": "/golf_villa.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1782482828/42/42_PAAD2024144_01.jpg",
     "latitude": 39.805,
     "longitude": -77.218,
     "realtor_id": "d8c7b80a-9d6e-4c3e-902e-8cb5d6e2e5c8",
@@ -1090,7 +1089,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "The Paddock is a charming, highly established active-adult community. The social committee organizes fantastic dinners and get-togethers. Walt's tip: Be sure to tour the clubhouse and meet the neighbors.",
     "community_url": "https://www.retiretopa.com/the-paddock-red-lion/",
-    "image_url": "/luxury_clubhouse.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1782473069/42/42_PAYK2103680_01.jpg",
     "latitude": 39.8926,
     "longitude": -76.6033,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -1122,7 +1121,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "The Porches of Allenberry offers a peaceful environment for downsizers. Grounds are kept in top-tier shape year-round. Walt's tip: Homes here feature very well-designed single-story layouts.",
     "community_url": "https://www.retiretopa.com/the-porches-of-allenberry/",
-    "image_url": "/luxury_clubhouse.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1781407256/42/42_PACB2055232_01.jpg",
     "latitude": 39.9763,
     "longitude": -76.7393,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -1153,7 +1152,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "The Preserves is a charming, highly established active-adult community. The social committee organizes fantastic dinners and get-togethers. Walt's tip: Be sure to tour the clubhouse and meet the neighbors.",
     "community_url": "https://www.retiretopa.com/the-preserves-gettysburg/",
-    "image_url": "/springwood_estates_villa.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1780891104/42/42_PAAD2023644_01.jpg",
     "latitude": 39.7865,
     "longitude": -77.2015,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -1184,7 +1183,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "The Villages at Maidencreek- features modern low-maintenance floorplans. Residents love the convenient access to local retail and dining. Walt's tip: Great community if you travel frequently since exterior upkeep is fully covered!",
     "community_url": "https://www.retiretopa.com/the-villages-at-maidencreek-blandon/",
-    "image_url": "/traditions_york_exterior.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1774108566/42/42_PABK2069426_01.jpg",
     "latitude": 40.3899,
     "longitude": -75.9758,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -1214,7 +1213,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Villas at Cattail Crossing offers premium low-maintenance homes near the golf course. Located in Hanover, it is very peaceful and well-maintained. Walt's tip: The proximity to Cattail Club makes this a golfer's paradise.",
     "community_url": "https://www.retiretopa.com/the-villas-cattail/",
-    "image_url": "/golf_villa.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1781077128/42/42_PAAD2023750_01.jpg",
     "latitude": 39.815,
     "longitude": -76.995,
     "realtor_id": "d8c7b80a-9d6e-4c3e-902e-8cb5d6e2e5c8",
@@ -1248,7 +1247,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "The Villas On The Lake York offers a peaceful environment for downsizers. Grounds are kept in top-tier shape year-round. Walt's tip: Homes here feature very well-designed single-story layouts.",
     "community_url": "https://www.retiretopa.com/the-villas-on-the-lake/",
-    "image_url": "/springwood_estates_villa.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1779153219/42/42_PAYK2103684_01.jpg",
     "latitude": 39.9538,
     "longitude": -76.747,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -1280,7 +1279,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Timber Villa Berks features modern low-maintenance floorplans. Residents love the convenient access to local retail and dining. Walt's tip: Great community if you travel frequently since exterior upkeep is fully covered!",
     "community_url": "https://www.retiretopa.com/timber-villa/",
-    "image_url": "/luxury_clubhouse.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1781527639/42/42_PALA2088882_01.jpg",
     "latitude": 40.4023,
     "longitude": -76.0162,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -1310,7 +1309,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Traditions of America E Petersburg is a fantastic 55+ neighborhood in the York County area. Offering beautiful homes and highly quiet environments. Walt's tip: Perfect for buyers wanting peaceful surroundings.",
     "community_url": "https://www.retiretopa.com/traditions-of-america-e-petersburg/",
-    "image_url": "/traditions_york_exterior.png",
+    "image_url": "https://sierra-public.azureedge.net/2d43c7f0-9b9c-443e-9e8f-d57dc6571c34.jpg",
     "latitude": 39.9664,
     "longitude": -76.714,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -1341,7 +1340,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Traditions of America Lititz features modern low-maintenance floorplans. Residents love the convenient access to local retail and dining. Walt's tip: Great community if you travel frequently since exterior upkeep is fully covered!",
     "community_url": "https://www.retiretopa.com/traditions-of-america-lititz/",
-    "image_url": "/traditions_york_exterior.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1778562340/42/42_PALA2086048_01.jpg",
     "latitude": 40.0336,
     "longitude": -76.3684,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -1375,7 +1374,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Traditions of America is a fantastic 55+ neighborhood in the Cumberland County area. Offering beautiful homes and highly quiet environments. Walt's tip: Perfect for buyers wanting peaceful surroundings.",
     "community_url": "https://www.retiretopa.com/traditions-of-america-silver-springs/",
-    "image_url": "/traditions_york_exterior.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1782525002/42/42_PACB2055742_01.jpg",
     "latitude": 40.1938,
     "longitude": -76.9989,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -1408,7 +1407,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Village Grande features modern low-maintenance floorplans. Residents love the convenient access to local retail and dining. Walt's tip: Great community if you travel frequently since exterior upkeep is fully covered!",
     "community_url": "https://www.retiretopa.com/village-grande-millersville/",
-    "image_url": "/springwood_estates_villa.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1777853933/42/42_PALA2087448_01.jpg",
     "latitude": 39.9608,
     "longitude": -76.2479,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -1439,7 +1438,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Watson Run is a charming, highly established active-adult community. The social committee organizes fantastic dinners and get-togethers. Walt's tip: Be sure to tour the clubhouse and meet the neighbors.",
     "community_url": "https://www.retiretopa.com/watson-run-gordonville/",
-    "image_url": "/springwood_estates_villa.png",
+    "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1769278896/42/42_PALA2082228_340.jpg",
     "latitude": 40.0837,
     "longitude": -76.26,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -1470,7 +1469,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Wynfield at Annville features modern low-maintenance floorplans. Residents love the convenient access to local retail and dining. Walt's tip: Great community if you travel frequently since exterior upkeep is fully covered!",
     "community_url": "https://www.retiretopa.com/wayfield-at-annville/",
-    "image_url": "/luxury_clubhouse.png",
+    "image_url": "https://sierra-public.azureedge.net/478e5159-de28-4012-8dab-c2cef2a7da0e.jpg",
     "latitude": 40.3441,
     "longitude": -76.4011,
     "created_at": "2026-05-30T12:56:41.877Z"
@@ -1501,7 +1500,7 @@ const DEFAULT_COMMUNITIES = [
     ],
     "realtor_notes": "Wynfield at features modern low-maintenance floorplans. Residents love the convenient access to local retail and dining. Walt's tip: Great community if you travel frequently since exterior upkeep is fully covered!",
     "community_url": "https://www.retiretopa.com/wynfield-at-millersville/",
-    "image_url": "/modern_ranch_home.png",
+    "image_url": "https://sierra-public.azureedge.net/478e5159-de28-4012-8dab-c2cef2a7da0e.jpg",
     "latitude": 40.0125,
     "longitude": -76.2367,
     "created_at": "2026-05-30T12:56:41.878Z"
@@ -1627,7 +1626,7 @@ const DEFAULT_COMMUNITIES = [
     "longitude": -82.3581,
     "created_at": "2026-05-30T12:56:41.878Z"
   }
-];;;
+];;;;;
 
 // In-memory store for server-side SSR operations when env vars are missing
 let serverStore: {
@@ -1680,10 +1679,11 @@ const getLocalStorageDb = () => {
         }
       }
       if (key === '55plus_communities' && Array.isArray(parsed)) {
-        // Overwrite if cached list is very old/placeholder, or if it doesn't contain Tampa communities yet
+        // Overwrite if cached list is very old/placeholder, or if it doesn't contain Tampa communities yet, or contains old placeholder images
         const hasPlaceholder = parsed.some(c => c.id.startsWith('c1111111') || c.id === 'c1111111-1111-1111-1111-111111111111');
         const hasTampaComms = parsed.some(c => c.realtor_id === TAMPA_REALTOR.id);
-        if (parsed.length < 40 || hasPlaceholder || !hasTampaComms) {
+        const hasPlaceholderImg = parsed.some(c => c.image_url === '/modern_ranch_home.png' || c.image_url === '/traditions_york_exterior.png');
+        if (parsed.length < 40 || hasPlaceholder || !hasTampaComms || hasPlaceholderImg) {
           localStorage.setItem(key, JSON.stringify(initial));
           return initial;
         }

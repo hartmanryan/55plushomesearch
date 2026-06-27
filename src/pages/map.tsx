@@ -258,7 +258,7 @@ export default function MapPage() {
                     sessionStorage.setItem('pending_community_redirect', url);
                   }
                   const tenantParam = subdomain !== 'york' ? `?id=${subdomain}` : '';
-                  router.push(`/${tenantParam}`);
+                  router.push(`/register${tenantParam}`);
                 }}
                 searchCenter={searchCenter}
                 searchZoom={searchZoom}
