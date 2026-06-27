@@ -267,11 +267,11 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
             }}
             className="w-full"
           >
-            {/* Step 2: Structural Property Selection */}
+            {/* Step 2: First-Floor Master Bedroom Requirement */}
             {step === 2 && (
               <div>
-                <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-8 leading-tight tracking-tight">
-                  Which Style Of Home Fits Your Lifestyle Best?
+                <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-8 leading-tight tracking-tight text-center">
+                  Do You Need Your Master Bedroom To Be On the First Floor?
                 </h2>
 
                 <div className="grid grid-cols-1 gap-4">
@@ -280,11 +280,11 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
                     whileHover={{ y: -2, borderColor: '#9A7F56' }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => {
-                      setPreferredStyle('Single-Family Detached');
+                      setPreferredStyle('Yes, I Prefer 1 Floor');
                       handleNextStep();
                     }}
                     className={`w-full text-left p-5 rounded-xl border-2 flex items-center justify-between interactive-target group shadow-2xs cursor-pointer ${
-                      preferredStyle === 'Single-Family Detached' 
+                      preferredStyle === 'Yes, I Prefer 1 Floor' 
                         ? 'border-primary bg-primary/5' 
                         : 'border-border-custom bg-white'
                     }`}
@@ -294,8 +294,8 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
                         <Home className="w-6 h-6" />
                       </div>
                       <div>
-                        <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">Single-Family Detached</span>
-                        <span className="block text-sm sm:text-base text-foreground/50 mt-0.5">Standalone home with maximum privacy</span>
+                        <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">Yes, I Prefer 1 Floor</span>
+                        <span className="block text-sm sm:text-base text-foreground/50 mt-0.5">No stairs, main-level living</span>
                       </div>
                     </div>
                     <ArrowRight className="w-5 h-5 text-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all" />
@@ -306,11 +306,11 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
                     whileHover={{ y: -2, borderColor: '#9A7F56' }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => {
-                      setPreferredStyle('Low-Maintenance Townhome / Villa');
+                      setPreferredStyle('No, Stairs Are Ok');
                       handleNextStep();
                     }}
                     className={`w-full text-left p-5 rounded-xl border-2 flex items-center justify-between interactive-target group shadow-2xs cursor-pointer ${
-                      preferredStyle === 'Low-Maintenance Townhome / Villa' 
+                      preferredStyle === 'No, Stairs Are Ok' 
                         ? 'border-primary bg-primary/5' 
                         : 'border-border-custom bg-white'
                     }`}
@@ -320,34 +320,8 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
                         <Building2 className="w-6 h-6" />
                       </div>
                       <div>
-                        <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">Townhome / Villa Layout</span>
-                        <span className="block text-sm sm:text-base text-foreground/50 mt-0.5">Attached layout with external maintenance included</span>
-                      </div>
-                    </div>
-                    <ArrowRight className="w-5 h-5 text-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all" />
-                  </motion.button>
-
-                  <motion.button
-                    type="button"
-                    whileHover={{ y: -2, borderColor: '#9A7F56' }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => {
-                      setPreferredStyle('Condo / Penthouse Layout');
-                      handleNextStep();
-                    }}
-                    className={`w-full text-left p-5 rounded-xl border-2 flex items-center justify-between interactive-target group shadow-2xs cursor-pointer ${
-                      preferredStyle === 'Condo / Penthouse Layout' 
-                        ? 'border-primary bg-primary/5' 
-                        : 'border-border-custom bg-white'
-                    }`}
-                  >
-                    <div className="flex items-center">
-                      <div className="p-3 bg-primary/5 text-primary rounded-lg mr-4">
-                        <Building className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">Condo / Penthouse Layout</span>
-                        <span className="block text-sm sm:text-base text-foreground/50 mt-0.5">Single-floor convenience and lock-and-go security</span>
+                        <span className="block text-xl sm:text-2xl font-serif font-bold text-foreground">No, Stairs Are Ok</span>
+                        <span className="block text-sm sm:text-base text-foreground/50 mt-0.5">Multi-level layouts are acceptable</span>
                       </div>
                     </div>
                     <ArrowRight className="w-5 h-5 text-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all" />

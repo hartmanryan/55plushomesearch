@@ -121,9 +121,22 @@ export default function Portal() {
       const matchingAmenities: string[] = [];
 
       // 1. Style Match (High weight)
-      const hasStyleMatch = comm.home_types.some(
-        (type) => type.toLowerCase() === userLead.preferred_style.toLowerCase()
-      );
+      let hasStyleMatch = false;
+      if (userLead.preferred_style === 'Yes, I Prefer 1 Floor') {
+        // Single Family, Villa, Condo typically offer 1st-floor master or single-level layouts
+        hasStyleMatch = comm.home_types.some(
+          (type) => type.toLowerCase().includes('single') || 
+                    type.toLowerCase().includes('villa') || 
+                    type.toLowerCase().includes('condo')
+        );
+      } else if (userLead.preferred_style === 'No, Stairs Are Ok') {
+        // Stairs are fine, so any housing style meets this requirement
+        hasStyleMatch = true;
+      } else {
+        hasStyleMatch = comm.home_types.some(
+          (type) => type.toLowerCase() === userLead.preferred_style.toLowerCase()
+        );
+      }
       if (hasStyleMatch) score += 30;
 
       // 2. Amenities Match
@@ -274,7 +287,7 @@ export default function Portal() {
                 Welcome, {lead.name}!
               </h1>
               <p className="text-lg text-foreground/80 font-light">
-                Based on your preference for a <span className="font-serif font-bold text-primary">{lead.preferred_style}</span> lifestyle, here are your matching active-adult communities in {realtor?.target_subdomain === 'york' ? 'York County' : 'Tampa Bay'}:
+                Based on your preference for a <span className="font-serif font-bold text-primary">{lead.preferred_style === 'Yes, I Prefer 1 Floor' ? 'first-floor master bedroom' : lead.preferred_style === 'No, Stairs Are Ok' ? 'flexible floor plan' : lead.preferred_style}</span> layout, here are your matching active-adult communities in {realtor?.target_subdomain === 'york' ? 'York County' : 'Tampa Bay'}:
               </p>
             </div>
 
