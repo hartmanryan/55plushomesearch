@@ -15,7 +15,8 @@ import {
   Loader2,
   ChevronDown,
   Compass,
-  MapPin
+  MapPin,
+  Car
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../utils/supabaseClient';
@@ -506,26 +507,26 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
                     </div>
                   </motion.button>
 
-                  {/* Amenity 9: Single Story Living */}
-                  <motion.button
-                    type="button"
-                    whileHover={{ y: -2, borderColor: '#9A7F56' }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => toggleAmenity('Single-Story Living / First-Floor Owner Suites')}
-                    className={`p-5 rounded-xl border-2 text-left interactive-target transition-all flex items-start shadow-2xs cursor-pointer ${
-                      mustHaveAmenities.includes('Single-Story Living / First-Floor Owner Suites')
-                        ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
-                        : 'border-border-custom bg-white'
-                    }`}
-                  >
-                    <div className="p-2.5 bg-primary/5 text-primary rounded-lg mr-3.5 shrink-0">
-                      <Home className="w-5.5 h-5.5" />
-                    </div>
-                    <div>
-                      <span className="block text-lg font-serif font-bold text-foreground leading-tight">Single-Story Living</span>
-                      <span className="block text-xs sm:text-sm text-foreground/50 mt-1">Stair-free floorplans, main level primary suites</span>
-                    </div>
-                  </motion.button>
+                   {/* Amenity 9: Parking & Garages */}
+                   <motion.button
+                     type="button"
+                     whileHover={{ y: -2, borderColor: '#9A7F56' }}
+                     whileTap={{ scale: 0.98 }}
+                     onClick={() => toggleAmenity('Parking / Garages')}
+                     className={`p-5 rounded-xl border-2 text-left interactive-target transition-all flex items-start shadow-2xs cursor-pointer ${
+                       mustHaveAmenities.includes('Parking / Garages')
+                         ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+                         : 'border-border-custom bg-white'
+                     }`}
+                   >
+                     <div className="p-2.5 bg-primary/5 text-primary rounded-lg mr-3.5 shrink-0">
+                       <Car className="w-5.5 h-5.5" />
+                     </div>
+                     <div>
+                       <span className="block text-lg font-serif font-bold text-foreground leading-tight">Parking & Garages</span>
+                       <span className="block text-xs sm:text-sm text-foreground/50 mt-1">Dedicated garages, carports, or extra driveway space</span>
+                     </div>
+                   </motion.button>
 
                   {/* Amenity 10: RV & Boat Storage */}
                   <motion.button
