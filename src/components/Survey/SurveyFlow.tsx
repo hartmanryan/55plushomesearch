@@ -120,9 +120,9 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
     onStepChange?.(step);
   }, [step, onStepChange]);
 
-  // Auto-submit step 5 when all required parameters exist
+  // Auto-submit step 6 when all required parameters exist
   useEffect(() => {
-    if (step === 5 && name.trim() && email.trim() && phone.trim() && !loading) {
+    if (step === 6 && name.trim() && email.trim() && phone.trim() && !loading) {
       const dummyEvent = { preventDefault: () => {} } as React.FormEvent;
       handleSubmit(dummyEvent);
     }
@@ -227,7 +227,7 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
   };
 
   // Progress Bar percentage
-  const progressPercent = ((step - 1) / 4) * 100;
+  const progressPercent = ((step - 1) / 5) * 100;
 
   return (
     <div className="w-full max-w-2xl mx-auto bg-card rounded-2xl editorial-shadow border border-border-custom overflow-hidden">
@@ -551,8 +551,45 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
               </div>
             )}
 
-            {/* Step 3: Destination & Identity Mapping (Timeline) */}
+            {/* Step 3: Bedrooms Question */}
             {step === 3 && (
+              <div>
+                <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-8 leading-tight tracking-tight text-center">
+                  How Many Bedrooms Do You Need?
+                </h2>
+
+                <div className="grid grid-cols-2 gap-4">
+                  {[
+                    { label: '1 Bedroom', value: 1 },
+                    { label: '2 Bedrooms', value: 2 },
+                    { label: '3 Bedrooms', value: 3 },
+                    { label: '4+ Bedrooms', value: 4 }
+                  ].map((opt) => (
+                    <motion.button
+                      key={opt.value}
+                      type="button"
+                      whileHover={{ y: -2, borderColor: '#9A7F56' }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        setBedrooms(opt.value);
+                        handleNextStep();
+                      }}
+                      className={`p-6 rounded-xl border-2 text-center interactive-target group shadow-2xs cursor-pointer ${
+                        bedrooms === opt.value 
+                          ? 'border-primary bg-primary/5' 
+                          : 'border-border-custom bg-white'
+                      }`}
+                    >
+                      <span className="block text-2xl font-serif font-bold text-foreground mb-1">{opt.value === 4 ? '4+' : opt.value}</span>
+                      <span className="block text-sm text-foreground/50">{opt.label}</span>
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Step 4: Destination & Identity Mapping (Timeline) */}
+            {step === 4 && (
               <div>
                 <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-8 leading-tight tracking-tight text-center">
                   What's Your Time Line For A Move
@@ -625,8 +662,8 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
               </div>
             )}
 
-            {/* Step 4: Current Residence Situation */}
-            {step === 4 && (
+            {/* Step 5: Current Residence Situation */}
+            {step === 5 && (
               <div>
                 <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-8 leading-tight tracking-tight text-center">
                   Do You Currently Live In The {regionName} Area?
@@ -711,8 +748,8 @@ export default function SurveyFlow({ realtor, onStepChange, onComplete }: Survey
               </div>
             )}
 
-            {/* Step 5: Secure Value-Add Contact Capture */}
-            {step === 5 && (
+            {/* Step 6: Secure Value-Add Contact Capture */}
+            {step === 6 && (
               <div>
                 <h2 className="text-3xl sm:text-4xl font-serif font-black text-foreground mb-4 leading-tight tracking-tight text-center">
                   Create FREE Account & See Your Recommended Communities
