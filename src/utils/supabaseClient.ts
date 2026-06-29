@@ -107,7 +107,7 @@ const DEFAULT_COMMUNITIES = [
     "id": "c-seed-bloomfields",
     "realtor_id": "d8c7b80a-9d6e-4c3e-902e-8cb5d6e2e5c8",
     "name": "Bloomfields",
-    "region": "York County",
+    "region": "Maryland",
     "price_min": 340000,
     "price_max": 500000,
     "hoa_fee": 185,
@@ -130,8 +130,8 @@ const DEFAULT_COMMUNITIES = [
     "realtor_notes": "Bloomfields offers a peaceful environment for downsizers. Grounds are kept in top-tier shape year-round. Walt's tip: Homes here feature very well-designed single-story layouts.",
     "community_url": "https://www.retiretopa.com/bloomfields/",
     "image_url": "https://sierra-public.azureedge.net/e79ae834-1e54-4fab-b4cd-f3d1ea3c66ea.jpg",
-    "latitude": 39.9644,
-    "longitude": -76.7261,
+    "latitude": 39.4260,
+    "longitude": -77.4200,
     "created_at": "2026-05-30T12:56:41.877Z"
   },
   {
@@ -164,8 +164,8 @@ const DEFAULT_COMMUNITIES = [
     "realtor_notes": "Brookshire is a fantastic 55+ neighborhood in the Lancaster County area. Offering beautiful homes and highly quiet environments. Walt's tip: Perfect for buyers wanting peaceful surroundings.",
     "community_url": "https://www.retiretopa.com/brookshire-lancaster/",
     "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1782311306/42/42_PALA2089294_01.jpg",
-    "latitude": 40.0495,
-    "longitude": -76.3476,
+    "latitude": 40.1650,
+    "longitude": -76.3860,
     "created_at": "2026-05-30T12:56:41.877Z"
   },
   {
@@ -543,15 +543,15 @@ const DEFAULT_COMMUNITIES = [
     "realtor_notes": "Home Towne Square is a charming, highly established active-adult community. The social committee organizes fantastic dinners and get-togethers. Walt's tip: Be sure to tour the clubhouse and meet the neighbors.",
     "community_url": "https://www.retiretopa.com/home-towne-square-ephrata/",
     "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1782307781/42/42_PALA2090730_01.jpg",
-    "latitude": 39.9765,
-    "longitude": -76.3944,
+    "latitude": 40.1740,
+    "longitude": -76.2080,
     "created_at": "2026-05-30T12:56:41.877Z"
   },
   {
     "id": "c-seed-honeycroft-village",
     "realtor_id": "d8c7b80a-9d6e-4c3e-902e-8cb5d6e2e5c8",
     "name": "Honeycroft Village",
-    "region": "York County",
+    "region": "Chester County",
     "price_min": 320000,
     "price_max": 680000,
     "hoa_fee": 225,
@@ -576,8 +576,8 @@ const DEFAULT_COMMUNITIES = [
     "realtor_notes": "Honeycroft Village is a charming, highly established active-adult community. The social committee organizes fantastic dinners and get-togethers. Walt's tip: Be sure to tour the clubhouse and meet the neighbors.",
     "community_url": "https://www.retiretopa.com/honeycroft-village/",
     "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1782566568/42/42_PACT2129104_01.jpg",
-    "latitude": 39.9671,
-    "longitude": -76.706,
+    "latitude": 39.9160,
+    "longitude": -75.9550,
     "created_at": "2026-05-30T12:56:41.877Z"
   },
   {
@@ -607,8 +607,8 @@ const DEFAULT_COMMUNITIES = [
     "realtor_notes": "Jackson Heights is a gorgeous active adult community in York, PA. Known for its convenient location and excellent quality construction, it offers single-floor ranch-style living. Walt's tip: Residents love the tight-knit social vibe here.",
     "community_url": "https://www.retiretopa.com/jackson-heights-york/",
     "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1779285924/42/42_PAYK2101704_01.jpg",
-    "latitude": 39.988,
-    "longitude": -76.715,
+    "latitude": 39.9570,
+    "longitude": -76.8450,
     "realtor_id": "d8c7b80a-9d6e-4c3e-902e-8cb5d6e2e5c8",
     "created_at": "2026-05-30T12:56:41.877Z"
   },
@@ -647,7 +647,7 @@ const DEFAULT_COMMUNITIES = [
     "id": "c-seed-lake-meade",
     "realtor_id": "d8c7b80a-9d6e-4c3e-902e-8cb5d6e2e5c8",
     "name": "Lake Meade Berlin",
-    "region": "York County",
+    "region": "Adams County",
     "price_min": 300000,
     "price_max": 480000,
     "hoa_fee": 175,
@@ -669,11 +669,11 @@ const DEFAULT_COMMUNITIES = [
       "Single-Family Detached",
       "Low-Maintenance Townhome / Villa"
     ],
-    "realtor_notes": "Lake Meade Berlin is a fantastic 55+ neighborhood in the York County area. Offering beautiful homes and highly quiet environments. Walt's tip: Perfect for buyers wanting peaceful surroundings.",
+    "realtor_notes": "Lake Meade Berlin is a fantastic 55+ neighborhood in the East Berlin area. Offering beautiful homes and highly quiet environments. Walt's tip: Perfect for buyers wanting peaceful surroundings.",
     "community_url": "https://www.retiretopa.com/lake-meade/",
     "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1782498057/42/42_PAAD2024230_01.jpg",
-    "latitude": 39.9553,
-    "longitude": -76.7067,
+    "latitude": 39.9850,
+    "longitude": -77.0467,
     "created_at": "2026-05-30T12:56:41.877Z"
   },
   {
@@ -743,7 +743,7 @@ const DEFAULT_COMMUNITIES = [
     "id": "c-seed-meadow-view-farms",
     "realtor_id": "d8c7b80a-9d6e-4c3e-902e-8cb5d6e2e5c8",
     "name": "Meadow View Farms",
-    "region": "York County",
+    "region": "Berks County",
     "price_min": 300000,
     "price_max": 640000,
     "hoa_fee": 255,
@@ -768,8 +768,8 @@ const DEFAULT_COMMUNITIES = [
     "realtor_notes": "Meadow View Farms is a fantastic 55+ neighborhood in the York County area. Offering beautiful homes and highly quiet environments. Walt's tip: Perfect for buyers wanting peaceful surroundings.",
     "community_url": "https://www.retiretopa.com/meadow-view-farms/",
     "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1773364707/42/42_PABK2069088_01.jpg",
-    "latitude": 39.9814,
-    "longitude": -76.7338,
+    "latitude": 40.3815,
+    "longitude": -75.7978,
     "created_at": "2026-05-30T12:56:41.877Z"
   },
   {
@@ -971,7 +971,7 @@ const DEFAULT_COMMUNITIES = [
     "id": "c-seed-stonecroft-village",
     "realtor_id": "d8c7b80a-9d6e-4c3e-902e-8cb5d6e2e5c8",
     "name": "Stonecroft Village",
-    "region": "York County",
+    "region": "Berks County",
     "price_min": 340000,
     "price_max": 700000,
     "hoa_fee": 165,
@@ -994,8 +994,8 @@ const DEFAULT_COMMUNITIES = [
     "realtor_notes": "Stonecroft Village offers a peaceful environment for downsizers. Grounds are kept in top-tier shape year-round. Walt's tip: Homes here feature very well-designed single-story layouts.",
     "community_url": "https://www.retiretopa.com/stonecroft-village/",
     "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1774759785/42/42_PABK2069800_01.jpg",
-    "latitude": 39.9863,
-    "longitude": -76.7037,
+    "latitude": 40.3530,
+    "longitude": -76.1730,
     "created_at": "2026-05-30T12:56:41.877Z"
   },
   {
@@ -1098,7 +1098,7 @@ const DEFAULT_COMMUNITIES = [
     "id": "c-seed-the-porches-of-allenberry",
     "realtor_id": "d8c7b80a-9d6e-4c3e-902e-8cb5d6e2e5c8",
     "name": "The Porches of Allenberry",
-    "region": "York County",
+    "region": "Cumberland County",
     "price_min": 280000,
     "price_max": 620000,
     "hoa_fee": 175,
@@ -1122,8 +1122,8 @@ const DEFAULT_COMMUNITIES = [
     "realtor_notes": "The Porches of Allenberry offers a peaceful environment for downsizers. Grounds are kept in top-tier shape year-round. Walt's tip: Homes here feature very well-designed single-story layouts.",
     "community_url": "https://www.retiretopa.com/the-porches-of-allenberry/",
     "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1781407256/42/42_PACB2055232_01.jpg",
-    "latitude": 39.9763,
-    "longitude": -76.7393,
+    "latitude": 40.1520,
+    "longitude": -77.1060,
     "created_at": "2026-05-30T12:56:41.877Z"
   },
   {
@@ -1288,7 +1288,7 @@ const DEFAULT_COMMUNITIES = [
     "id": "c-seed-traditions-of-america-e-petersburg",
     "realtor_id": "d8c7b80a-9d6e-4c3e-902e-8cb5d6e2e5c8",
     "name": "Traditions of America E Petersburg",
-    "region": "York County",
+    "region": "Lancaster County",
     "price_min": 320000,
     "price_max": 560000,
     "hoa_fee": 155,
@@ -1307,11 +1307,11 @@ const DEFAULT_COMMUNITIES = [
       "Single-Family Detached",
       "Low-Maintenance Townhome / Villa"
     ],
-    "realtor_notes": "Traditions of America E Petersburg is a fantastic 55+ neighborhood in the York County area. Offering beautiful homes and highly quiet environments. Walt's tip: Perfect for buyers wanting peaceful surroundings.",
+    "realtor_notes": "Traditions of America E Petersburg is a fantastic 55+ neighborhood in the East Petersburg area. Offering beautiful homes and highly quiet environments. Walt's tip: Perfect for buyers wanting peaceful surroundings.",
     "community_url": "https://www.retiretopa.com/traditions-of-america-e-petersburg/",
     "image_url": "https://sierra-public.azureedge.net/2d43c7f0-9b9c-443e-9e8f-d57dc6571c34.jpg",
-    "latitude": 39.9664,
-    "longitude": -76.714,
+    "latitude": 40.0850,
+    "longitude": -76.3660,
     "created_at": "2026-05-30T12:56:41.877Z"
   },
   {
@@ -1341,8 +1341,8 @@ const DEFAULT_COMMUNITIES = [
     "realtor_notes": "Traditions of America Lititz features modern low-maintenance floorplans. Residents love the convenient access to local retail and dining. Walt's tip: Great community if you travel frequently since exterior upkeep is fully covered!",
     "community_url": "https://www.retiretopa.com/traditions-of-america-lititz/",
     "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1778562340/42/42_PALA2086048_01.jpg",
-    "latitude": 40.0336,
-    "longitude": -76.3684,
+    "latitude": 40.1805,
+    "longitude": -76.3351,
     "created_at": "2026-05-30T12:56:41.877Z"
   },
   {
@@ -1408,8 +1408,8 @@ const DEFAULT_COMMUNITIES = [
     "realtor_notes": "Village Grande features modern low-maintenance floorplans. Residents love the convenient access to local retail and dining. Walt's tip: Great community if you travel frequently since exterior upkeep is fully covered!",
     "community_url": "https://www.retiretopa.com/village-grande-millersville/",
     "image_url": "https://cdn.listingphotos.sierrastatic.com/pics2x/v1777853933/42/42_PALA2087448_01.jpg",
-    "latitude": 39.9608,
-    "longitude": -76.2479,
+    "latitude": 40.0658,
+    "longitude": -76.3664,
     "created_at": "2026-05-30T12:56:41.877Z"
   },
   {
@@ -1679,11 +1679,12 @@ const getLocalStorageDb = () => {
         }
       }
       if (key === '55plus_communities' && Array.isArray(parsed)) {
-        // Overwrite if cached list is very old/placeholder, or if it doesn't contain Tampa communities yet, or contains old placeholder images
+        // Overwrite if cached list is very old/placeholder, or if it doesn't contain Tampa communities yet, or contains old placeholder images or stale coordinates
         const hasPlaceholder = parsed.some(c => c.id.startsWith('c1111111') || c.id === 'c1111111-1111-1111-1111-111111111111');
         const hasTampaComms = parsed.some(c => c.realtor_id === TAMPA_REALTOR.id);
         const hasPlaceholderImg = parsed.some(c => c.image_url === '/modern_ranch_home.png' || c.image_url === '/traditions_york_exterior.png');
-        if (parsed.length < 40 || hasPlaceholder || !hasTampaComms || hasPlaceholderImg) {
+        const hasStaleLocations = parsed.some(c => c.id === 'c-seed-lake-meade' && c.latitude === 39.9553);
+        if (parsed.length < 40 || hasPlaceholder || !hasTampaComms || hasPlaceholderImg || hasStaleLocations) {
           localStorage.setItem(key, JSON.stringify(initial));
           return initial;
         }
